@@ -1,0 +1,12 @@
+{
+  "name": "Meal Plan",
+  "short_name": "Meals",
+  "description": "14-Day Hypertrophy Meal Plan",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#4CAF50",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

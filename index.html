@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#4CAF50">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>14-Day Hypertrophy Meal Plan</title>
+<style>
+:root {
+  --protein: #4CAF50;
+  --carbs: #FF9800;
+  --fat: #2196F3;
+  --calories: #F44336;
+  --transition: 0.3s ease;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-card: #252525;
+  --bg-card-hover: #2c2c2c;
+  --bg-input: #333;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666;
+  --border: #333;
+  --border-light: #3a3a3a;
+  --shadow: rgba(0,0,0,0.4);
+  --badge-bg: rgba(255,255,255,0.08);
+  --tab-bg: #1a1a1a;
+  --tab-active: #333;
+  --green-bg: rgba(76,175,80,0.15);
+  --yellow-bg: rgba(255,152,0,0.15);
+  --red-bg: rgba(244,67,54,0.15);
+  --green-text: #66bb6a;
+  --yellow-text: #ffa726;
+  --red-text: #ef5350;
+  --prep-banner-bg: rgba(33,150,243,0.12);
+  --prep-banner-border: rgba(33,150,243,0.3);
+  --checkbox-bg: #333;
+  --strikethrough: #555;
+  --target-line: rgba(244,67,54,0.6);
+  --bar-bg: #333;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #fff;
+  --bg-card: #fff;
+  --bg-card-hover: #fafafa;
+  --bg-input: #eee;
+  --text-primary: #212121;
+  --text-secondary: #555;
+  --text-muted: #999;
+  --border: #e0e0e0;
+  --border-light: #eee;
+  --shadow: rgba(0,0,0,0.1);
+  --badge-bg: rgba(0,0,0,0.05);
+  --tab-bg: #eee;
+  --tab-active: #fff;
+  --green-bg: rgba(76,175,80,0.1);
+  --yellow-bg: rgba(255,152,0,0.1);
+  --red-bg: rgba(244,67,54,0.1);
+  --green-text: #388e3c;
+  --yellow-text: #e65100;
+  --red-text: #c62828;
+  --prep-banner-bg: rgba(33,150,243,0.08);
+  --prep-banner-border: rgba(33,150,243,0.3);
+  --checkbox-bg: #ddd;
+  --strikethrough: #bbb;
+  --target-line: rgba(244,67,54,0.5);
+  --bar-bg: #e0e0e0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background var(--transition), color var(--transition);
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+/* Fixed Header / Tab Nav */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: background var(--transition), border var(--transition);
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 56px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+}
+
+.header-title span { color: var(--protein); }
+
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  background: var(--tab-bg);
+  border-radius: 10px;
+  padding: 3px;
+  transition: background var(--transition);
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active {
+  background: var(--tab-active);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-card);
+  border-color: var(--text-muted);
+}
+
+/* Main Content */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.tab-content.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px var(--shadow);
+  border: 1px solid var(--border-light);
+  transition: background var(--transition), border var(--transition);
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+/* Macro Badges */
+.macro-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.macro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--badge-bg);
+}
+
+.macro-badge.protein { color: var(--protein); border: 1px solid rgba(76,175,80,0.3); }
+.macro-badge.carbs { color: var(--carbs); border: 1px solid rgba(255,152,0,0.3); }
+.macro-badge.fat { color: var(--fat); border: 1px solid rgba(33,150,243,0.3); }
+.macro-badge.cal { color: var(--calories); border: 1px solid rgba(244,67,54,0.3); }
+
+.macro-badge-label { font-weight: 400; opacity: 0.8; }
+
+/* ===================== DASHBOARD ===================== */
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.target-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px var(--shadow);
+  border: 1px solid var(--border-light);
+  transition: background var(--transition), border var(--transition);
+}
+
+.target-value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.target-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.target-unit {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Summary Table */
+.summary-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 580px;
+}
+
+.summary-table th {
+  text-align: left;
+  padding: 10px 8px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.summary-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border-light);
+  white-space: nowrap;
+}
+
+.summary-table tr:last-child td { border-bottom: none; }
+
+.summary-table tbody tr {
+  transition: background 0.15s;
+}
+.summary-table tbody tr:hover {
+  background: var(--bg-card-hover);
+}
+
+.cell-green { background: var(--green-bg); color: var(--green-text); border-radius: 4px; padding: 2px 6px; }
+.cell-yellow { background: var(--yellow-bg); color: var(--yellow-text); border-radius: 4px; padding: 2px 6px; }
+.cell-red { background: var(--red-bg); color: var(--red-text); border-radius: 4px; padding: 2px 6px; }
+
+.cost-summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.cost-item {
+  background: var(--badge-bg);
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.cost-item strong { font-size: 18px; }
+
+/* Timing Schedule */
+.timing-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.timing-slot {
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--badge-bg);
+  border-radius: 10px;
+}
+
+.timing-slot-name {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.timing-slot-time {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ===================== MEAL PLAN ===================== */
+.day-selector {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.day-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  text-align: center;
+  transition: all var(--transition);
+  min-width: 58px;
+}
+
+.day-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+.day-btn.active {
+  background: var(--protein);
+  color: #fff;
+  border-color: var(--protein);
+}
+
+.day-btn .day-num { font-weight: 700; display: block; font-size: 13px; }
+.day-btn .day-label { font-size: 10px; opacity: 0.8; }
+
+.prep-banner {
+  background: var(--prep-banner-bg);
+  border: 1px solid var(--prep-banner-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.prep-banner-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.prep-banner-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--fat);
+  margin-bottom: 4px;
+}
+
+.prep-banner-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.meal-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px var(--shadow);
+  border: 1px solid var(--border-light);
+  transition: background var(--transition), border var(--transition);
+}
+
+.meal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.meal-slot-time {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.meal-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.batch-badge {
+  display: inline-block;
+  background: rgba(33,150,243,0.15);
+  color: var(--fat);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.meal-macros {
+  margin: 10px 0;
+}
+
+.expandable {
+  margin-top: 8px;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+}
+
+.expand-btn:hover { color: var(--text-primary); }
+
+.expand-btn .arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+  font-size: 10px;
+}
+
+.expand-btn.open .arrow { transform: rotate(90deg); }
+
+.expand-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.expand-content.open {
+  max-height: 600px;
+}
+
+.ingredient-list {
+  list-style: none;
+  padding: 8px 0 4px;
+}
+
+.ingredient-list li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 3px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ingredient-list li .qty {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.prep-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 8px 0 4px;
+  line-height: 1.5;
+  border-top: 1px solid var(--border-light);
+  margin-top: 8px;
+}
+
+/* Day Totals Bar */
+.day-totals-bar {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 16px;
+  box-shadow: 0 2px 8px var(--shadow);
+  border: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-totals-label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* ===================== SHOPPING LIST ===================== */
+.week-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--tab-bg);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.week-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+
+.week-btn.active {
+  background: var(--tab-active);
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.shopping-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.clear-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.clear-btn:hover {
+  border-color: var(--red-text);
+  color: var(--red-text);
+}
+
+.shopping-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: opacity 0.2s;
+}
+
+.shopping-item:last-child { border-bottom: none; }
+
+.shopping-item.checked { opacity: 0.5; }
+.shopping-item.checked .shopping-product {
+  text-decoration: line-through;
+  color: var(--strikethrough);
+}
+
+.shopping-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  background: var(--checkbox-bg);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.shopping-checkbox:checked {
+  background: var(--protein);
+  border-color: var(--protein);
+}
+
+.shopping-checkbox:checked::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
+}
+
+.shopping-product {
+  flex: 1;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.shopping-qty {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  min-width: 50px;
+  text-align: center;
+}
+
+.shopping-cost {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: right;
+}
+
+.shopping-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 0;
+  margin-top: 8px;
+  border-top: 2px solid var(--border);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* ===================== NUTRITION ===================== */
+.nutrition-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.donut-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.donut-chart {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-hole {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: absolute;
+}
+
+.donut-hole-value {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.donut-hole-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.donut-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Bar Charts */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 160px;
+  position: relative;
+  padding-bottom: 24px;
+  margin-top: 12px;
+}
+
+.bar-chart-target {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed var(--target-line);
+  z-index: 1;
+}
+
+.bar-chart-target-label {
+  position: absolute;
+  right: 0;
+  top: -16px;
+  font-size: 10px;
+  color: var(--calories);
+  font-weight: 600;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  z-index: 2;
+}
+
+.bar {
+  width: 100%;
+  max-width: 40px;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.5s ease;
+  position: relative;
+}
+
+.bar-value {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.bar-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  position: absolute;
+  bottom: -20px;
+  white-space: nowrap;
+}
+
+/* Weekly Averages */
+.averages-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.avg-card {
+  background: var(--badge-bg);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.avg-card-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.avg-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.avg-row-label { color: var(--text-secondary); }
+.avg-row-value { font-weight: 600; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 0 10px;
+    height: 52px;
+  }
+  .header-title { font-size: 14px; }
+  .tab-btn { padding: 5px 10px; font-size: 12px; }
+  .targets-grid { grid-template-columns: repeat(2, 1fr); }
+  .target-value { font-size: 22px; }
+  .timing-grid { grid-template-columns: repeat(3, 1fr); }
+  .nutrition-grid { grid-template-columns: 1fr; }
+  .day-btn { min-width: 44px; padding: 6px 8px; }
+  .day-btn .day-num { font-size: 12px; }
+  .day-btn .day-label { font-size: 9px; }
+  .bar-chart { gap: 2px; }
+  .main { padding: 12px 10px 30px; }
+  .averages-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .tab-btn { padding: 5px 8px; font-size: 11px; }
+  .day-selector { gap: 4px; }
+  .day-btn { min-width: 40px; padding: 5px 6px; font-size: 11px; }
+  .meal-card { padding: 12px 14px; }
+  .macro-badges { gap: 4px; }
+  .macro-badge { padding: 3px 7px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-title"><span>Hypertrophy</span> Meal Plan</div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="mealplan">Meal Plan</button>
+      <button class="tab-btn" data-tab="shopping">Shopping</button>
+      <button class="tab-btn" data-tab="nutrition">Nutrition</button>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme"></button>
+  </div>
+</header>
+
+<main class="main">
+  <!-- Dashboard Tab -->
+  <section class="tab-content active" id="tab-dashboard"></section>
+
+  <!-- Meal Plan Tab -->
+  <section class="tab-content" id="tab-mealplan"></section>
+
+  <!-- Shopping Tab -->
+  <section class="tab-content" id="tab-shopping"></section>
+
+  <!-- Nutrition Tab -->
+  <section class="tab-content" id="tab-nutrition"></section>
+</main>
+
+<script>
+// ==================== DATA ====================
+const PLAN_DATA = {
+  "planId": "plan-001",
+  "startDate": "2026-02-22",
+  "endDate": "2026-03-08",
+  "dailyTargets": { "calories": 2300, "protein_g": 200, "carbs_g": 218, "fat_g": 70 },
+  "days": [
+    {
+      "day": 1, "dayOfWeek": "Sunday", "date": "2026-02-22", "prepDay": true,
+      "batchPrepInstructions": "Batch cook: 1.8kg chicken breast (season with paprika, garlic, salt \u2014 grill or bake). Cook 800g dry rice. Boil 18 eggs. Brown 800g lean mince with onion and garlic. Roast 600g butternut cubes. Store in containers for the week.",
+      "meals": [
+        { "slot": "breakfast", "time": "08:30", "name": "Scrambled Eggs with Toast & Banana", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22}, "prep": "Scramble 4 eggs in non-stick pan with spray oil. Toast bread. Eat banana on the side.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut in microwave.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":485,"protein_g":44,"carbs_g":58,"fat_g":5}, "prep": "Reheat chicken and rice. Microwave steam broccoli for 3 min.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended into shake"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":30,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":28,"carbs_g":11,"fat_g":24}, "prep": "Serve cottage cheese in bowl, top with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2373,"protein_g":191,"carbs_g":251,"fat_g":63}
+    },
+    {
+      "day": 2, "dayOfWeek": "Monday", "date": "2026-02-23", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water in microwave 3 min. Stir in whey protein. Top with sliced banana and peanut butter.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne or fusilli"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat batch-cooked mince with pasta sauce. Cook pasta fresh or reheat. Combine.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":170,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":80,"notes":"microwave steamed"}], "macros": {"calories":465,"protein_g":44,"carbs_g":53,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended into shake"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Fat Free Yoghurt with Whey & Nuts", "ingredients": [{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12}, "prep": "Mix whey into yoghurt. Top with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2398,"protein_g":213,"carbs_g":261,"fat_g":57}
+    },
+    {
+      "day": 3, "dayOfWeek": "Tuesday", "date": "2026-02-24", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Egg White Omelette with Toast", "ingredients": [{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20}, "prep": "Whisk egg whites and whole eggs. Cook in non-stick pan with spray oil. Add cheese before folding. Serve with toast.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Chicken & Rice with Mushroom Sauce", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Mushrooms","quantity_g":100,"notes":"sliced, pan-fried"},{"item":"Low Fat Milk","quantity_g":50,"notes":"for sauce"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":542,"protein_g":51,"carbs_g":58,"fat_g":8}, "prep": "Sautee mushrooms in spray oil. Add a splash of milk, season. Serve over reheated chicken and rice.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Sweet Potato (baked)","quantity_g":250,"notes":"microwave baked"}], "macros": {"calories":521,"protein_g":40,"carbs_g":50,"fat_g":16}, "prep": "Microwave sweet potato 6-8 min. Reheat batch-cooked mince. Serve together.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":486,"protein_g":44,"carbs_g":62,"fat_g":5}, "prep": "Reheat chicken and rice. Drizzle with soy sauce.", "batchPrep": true },
+        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}], "macros": {"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21}, "prep": "Serve cottage cheese in bowl, top with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2362,"protein_g":203,"carbs_g":209,"fat_g":70}
+    },
+    {
+      "day": 4, "dayOfWeek": "Wednesday", "date": "2026-02-25", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Futurelife Cereal with Milk & Boiled Eggs", "ingredients": [{"item":"Futurelife Smart Food","quantity_g":50,"notes":"1 serving"},{"item":"Low Fat Milk","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs (boiled)","quantity_g":150,"notes":"3 eggs, from batch"}], "macros": {"calories":515,"protein_g":36,"carbs_g":42,"fat_g":22}, "prep": "Pour cereal into bowl, add milk. Peel 3 batch-boiled eggs and eat on the side.", "batchPrep": true },
+        { "slot": "lunch", "time": "12:30", "name": "Hake Fillet with Sweet Potato & Steamed Broccoli", "ingredients": [{"item":"Hake Fillets","quantity_g":250,"notes":"2 fillets"},{"item":"Sweet Potato (baked)","quantity_g":200,"notes":"microwave baked"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"},{"item":"Lemon Juice","quantity_g":10,"notes":"squeeze over fish"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":507,"protein_g":53,"carbs_g":54,"fat_g":4}, "prep": "Pan-fry hake in spray oil 3-4 min each side. Microwave sweet potato and steam broccoli. Squeeze lemon over fish.", "batchPrep": false },
+        { "slot": "pre-workout", "time": "15:30", "name": "Whey Shake with Banana, Oats & Rice Cakes", "ingredients": [{"item":"Whey Protein","quantity_g":60,"notes":"2 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":50,"notes":"raw, blended"},{"item":"Rice Cakes","quantity_g":18,"notes":"2 cakes"},{"item":"Water","quantity_g":400,"notes":"for shake"}], "macros": {"calories":517,"protein_g":52,"carbs_g":69,"fat_g":6}, "prep": "Blend whey, oats, banana, and water. Eat rice cakes on the side.", "batchPrep": false },
+        { "slot": "post-workout", "time": "18:30", "name": "Lean Mince Pasta with Tomato Sauce", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":160,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":504,"protein_g":38,"carbs_g":50,"fat_g":16}, "prep": "Cook pasta. Reheat mince with sauce. Combine.", "batchPrep": true },
+        { "slot": "pre-bed", "time": "21:00", "name": "Scrambled Eggs with Cheese", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27}, "prep": "Scramble 3 eggs in non-stick pan. Add cheese slice on top to melt.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2387,"protein_g":204,"carbs_g":217,"fat_g":75}
+    },
+    {
+      "day": 5, "dayOfWeek": "Thursday", "date": "2026-02-26", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Cottage Cheese Oats with Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":150,"notes":"smooth"},{"item":"Oats","quantity_g":70,"notes":"raw, cooked with water"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted, chopped"},{"item":"Honey","quantity_g":10,"notes":"drizzle"},{"item":"Water","quantity_g":200,"notes":"for oats"}], "macros": {"calories":502,"protein_g":29,"carbs_g":59,"fat_g":18}, "prep": "Cook oats with water. Stir in cottage cheese. Top with nuts and honey drizzle.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Basa Fillet with Rice", "ingredients": [{"item":"Basa Fillets","quantity_g":220,"notes":"2 fillets"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":442,"protein_g":42,"carbs_g":51,"fat_g":5}, "prep": "Pan-fry basa in spray oil 3-4 min each side. Reheat rice. Drizzle soy sauce.", "batchPrep": false },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Biltong with Cottage Cheese", "ingredients": [{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}], "macros": {"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7}, "prep": "Serve biltong with cottage cheese on the side.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2198,"protein_g":200,"carbs_g":247,"fat_g":42}
+    },
+    {
+      "day": 6, "dayOfWeek": "Friday", "date": "2026-02-27", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Scrambled Eggs with Toast & Banana", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22}, "prep": "Scramble 4 eggs. Toast bread. Banana on the side.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat mince with sauce. Cook or reheat pasta. Combine.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":446,"protein_g":44,"carbs_g":49,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5}, "prep": "Reheat chicken and rice. Season with soy sauce.", "batchPrep": true },
+        { "slot": "pre-bed", "time": "21:00", "name": "Fat Free Yoghurt with Whey & Nuts", "ingredients": [{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12}, "prep": "Mix whey into yoghurt. Top with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2366,"protein_g":205,"carbs_g":224,"fat_g":64}
+    },
+    {
+      "day": 7, "dayOfWeek": "Saturday", "date": "2026-02-28", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "08:30", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water. Stir in whey. Top with banana and peanut butter.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Woolworths Chicken Ready Meal with Extra Protein", "ingredients": [{"item":"Woolworths Chicken & Veg Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Free Range Large Eggs (boiled)","quantity_g":100,"notes":"2 eggs, from batch"}], "macros": {"calories":516,"protein_g":40,"carbs_g":45,"fat_g":18}, "prep": "Microwave ready meal per instructions. Eat 2 boiled eggs on the side.", "batchPrep": false },
+        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook (last portions)"},{"item":"Sweet Potato (baked)","quantity_g":220,"notes":"microwave baked"}], "macros": {"calories":495,"protein_g":40,"carbs_g":44,"fat_g":16}, "prep": "Microwave sweet potato. Reheat last of batch-cooked mince.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Scrambled Eggs with Cheese", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27}, "prep": "Scramble 3 eggs. Top with cheese slice to melt.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2339,"protein_g":185,"carbs_g":228,"fat_g":81}
+    },
+    {
+      "day": 8, "dayOfWeek": "Sunday", "date": "2026-03-01", "prepDay": true,
+      "batchPrepInstructions": "Week 2 batch cook: 1.8kg chicken breast (season with lemon pepper, garlic, salt \u2014 grill or bake). Cook 800g dry rice. Boil 18 eggs. Brown 800g lean mince with onion and garlic. Roast 600g butternut cubes. Store in portioned containers for the week.",
+      "meals": [
+        { "slot": "breakfast", "time": "08:30", "name": "Egg White Omelette with Toast", "ingredients": [{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20}, "prep": "Whisk egg whites and whole eggs. Cook omelette, add cheese. Serve with toast.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":485,"protein_g":44,"carbs_g":58,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":30,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":28,"carbs_g":11,"fat_g":24}, "prep": "Serve cottage cheese in bowl, top with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2340,"protein_g":205,"carbs_g":230,"fat_g":61}
+    },
+    {
+      "day": 9, "dayOfWeek": "Monday", "date": "2026-03-02", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water in microwave. Stir in whey. Top with banana and peanut butter.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Chicken & Rice with Mushroom Sauce", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Mushrooms","quantity_g":100,"notes":"sliced, pan-fried"},{"item":"Low Fat Milk","quantity_g":50,"notes":"for sauce"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":542,"protein_g":51,"carbs_g":58,"fat_g":8}, "prep": "Sautee mushrooms. Add milk splash, season. Serve over reheated chicken and rice.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Sweet Potato (baked)","quantity_g":250,"notes":"microwave baked"}], "macros": {"calories":521,"protein_g":40,"carbs_g":50,"fat_g":16}, "prep": "Microwave sweet potato. Reheat batch-cooked mince.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5}, "prep": "Reheat chicken and rice. Season with soy sauce.", "batchPrep": true },
+        { "slot": "pre-bed", "time": "21:00", "name": "Biltong with Cottage Cheese", "ingredients": [{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}], "macros": {"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7}, "prep": "Serve biltong with cottage cheese.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2282,"protein_g":211,"carbs_g":236,"fat_g":49}
+    },
+    {
+      "day": 10, "dayOfWeek": "Tuesday", "date": "2026-03-03", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Futurelife Cereal with Milk & Boiled Eggs", "ingredients": [{"item":"Futurelife Smart Food","quantity_g":50,"notes":"1 serving"},{"item":"Low Fat Milk","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs (boiled)","quantity_g":150,"notes":"3 eggs, from batch"}], "macros": {"calories":515,"protein_g":36,"carbs_g":42,"fat_g":22}, "prep": "Pour cereal, add milk. Eat 3 batch-boiled eggs on the side.", "batchPrep": true },
+        { "slot": "lunch", "time": "12:30", "name": "Hake Fillet with Sweet Potato & Steamed Broccoli", "ingredients": [{"item":"Hake Fillets","quantity_g":250,"notes":"2 fillets"},{"item":"Sweet Potato (baked)","quantity_g":200,"notes":"microwave baked"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"},{"item":"Lemon Juice","quantity_g":10,"notes":"squeeze over fish"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":507,"protein_g":53,"carbs_g":54,"fat_g":4}, "prep": "Pan-fry hake in spray oil. Microwave sweet potato and steam broccoli.", "batchPrep": false },
+        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":170,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":80,"notes":"microwave steamed"}], "macros": {"calories":465,"protein_g":44,"carbs_g":53,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Lean Mince Pasta with Tomato Sauce", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":160,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":504,"protein_g":38,"carbs_g":50,"fat_g":16}, "prep": "Cook pasta. Reheat mince with sauce. Combine.", "batchPrep": true },
+        { "slot": "pre-bed", "time": "21:00", "name": "Fat Free Yoghurt with Whey & Nuts", "ingredients": [{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12}, "prep": "Mix whey into yoghurt. Top with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2363,"protein_g":212,"carbs_g":222,"fat_g":59}
+    },
+    {
+      "day": 11, "dayOfWeek": "Wednesday", "date": "2026-03-04", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Scrambled Eggs with Toast & Banana", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22}, "prep": "Scramble 4 eggs. Toast bread. Banana on the side.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat mince with sauce. Cook or reheat pasta. Combine.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Whey Shake with Banana, Oats & Rice Cakes", "ingredients": [{"item":"Whey Protein","quantity_g":60,"notes":"2 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":50,"notes":"raw, blended"},{"item":"Rice Cakes","quantity_g":18,"notes":"2 cakes"},{"item":"Water","quantity_g":400,"notes":"for shake"}], "macros": {"calories":517,"protein_g":52,"carbs_g":69,"fat_g":6}, "prep": "Blend whey, oats, banana, and water. Eat rice cakes on the side.", "batchPrep": false },
+        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5}, "prep": "Reheat chicken and rice. Drizzle soy sauce.", "batchPrep": true },
+        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}], "macros": {"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21}, "prep": "Serve cottage cheese topped with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2408,"protein_g":198,"carbs_g":232,"fat_g":74}
+    },
+    {
+      "day": 12, "dayOfWeek": "Thursday", "date": "2026-03-05", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Cottage Cheese Oats with Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":150,"notes":"smooth"},{"item":"Oats","quantity_g":70,"notes":"raw, cooked with water"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted, chopped"},{"item":"Honey","quantity_g":10,"notes":"drizzle"},{"item":"Water","quantity_g":200,"notes":"for oats"}], "macros": {"calories":502,"protein_g":29,"carbs_g":59,"fat_g":18}, "prep": "Cook oats with water. Stir in cottage cheese. Top with nuts and honey.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Basa Fillet with Rice", "ingredients": [{"item":"Basa Fillets","quantity_g":220,"notes":"2 fillets"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":442,"protein_g":42,"carbs_g":51,"fat_g":5}, "prep": "Pan-fry basa in spray oil 3-4 min each side. Reheat rice. Drizzle soy sauce.", "batchPrep": false },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Scrambled Eggs with Cheese", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27}, "prep": "Scramble 3 eggs. Top with cheese slice to melt.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2301,"protein_g":187,"carbs_g":245,"fat_g":62}
+    },
+    {
+      "day": 13, "dayOfWeek": "Friday", "date": "2026-03-06", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "07:00", "name": "Egg White Omelette with Toast", "ingredients": [{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20}, "prep": "Whisk egg whites and whole eggs. Cook omelette, add cheese. Serve with toast.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat mince with sauce. Cook or reheat pasta. Combine.", "batchPrep": true },
+        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":446,"protein_g":44,"carbs_g":49,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Woolworths Chicken Ready Meal with Whey Shake", "ingredients": [{"item":"Woolworths Chicken & Rice Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop in water"},{"item":"Water","quantity_g":300,"notes":"for shake"}], "macros": {"calories":480,"protein_g":42,"carbs_g":48,"fat_g":12}, "prep": "Microwave ready meal. Mix whey shake on the side. Add creatine to shake.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}], "macros": {"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21}, "prep": "Serve cottage cheese topped with nuts.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2316,"protein_g":202,"carbs_g":184,"fat_g":78}
+    },
+    {
+      "day": 14, "dayOfWeek": "Saturday", "date": "2026-03-07", "prepDay": false,
+      "meals": [
+        { "slot": "breakfast", "time": "08:30", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water. Stir in whey. Top with banana and peanut butter.", "batchPrep": false },
+        { "slot": "lunch", "time": "12:30", "name": "Woolworths Chicken Ready Meal with Extra Protein", "ingredients": [{"item":"Woolworths Chicken & Veg Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Free Range Large Eggs (boiled)","quantity_g":100,"notes":"2 eggs, from batch"}], "macros": {"calories":516,"protein_g":40,"carbs_g":45,"fat_g":18}, "prep": "Microwave ready meal. Eat 2 boiled eggs on the side.", "batchPrep": false },
+        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook (last portions)"},{"item":"Sweet Potato (baked)","quantity_g":220,"notes":"microwave baked"}], "macros": {"calories":495,"protein_g":40,"carbs_g":44,"fat_g":16}, "prep": "Microwave sweet potato. Reheat last of batch-cooked mince.", "batchPrep": true },
+        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
+        { "slot": "pre-bed", "time": "21:00", "name": "Biltong with Cottage Cheese", "ingredients": [{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}], "macros": {"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7}, "prep": "Serve biltong with cottage cheese.", "batchPrep": false }
+      ],
+      "dailyTotals": {"calories":2236,"protein_g":198,"carbs_g":230,"fat_g":61}
+    }
+  ],
+  "shoppingLists": {
+    "week1": {
+      "tripDate": "2026-02-22",
+      "items": [
+        {"product":"Skinless Chicken Breast Fillets 900g","quantity":2,"unit":"pack","estimatedCost_ZAR":259.98},
+        {"product":"Lean Beef Mince 500g","quantity":2,"unit":"pack","estimatedCost_ZAR":119.98},
+        {"product":"Free Range Large Eggs 18s","quantity":2,"unit":"tray","estimatedCost_ZAR":119.98},
+        {"product":"Liquid Egg Whites 500ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},
+        {"product":"Hake Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":64.99},
+        {"product":"Basa Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":54.99},
+        {"product":"Wholewheat Bread 700g","quantity":1,"unit":"loaf","estimatedCost_ZAR":21.99},
+        {"product":"White Rice 2kg","quantity":1,"unit":"bag","estimatedCost_ZAR":39.99},
+        {"product":"Penne Pasta 500g","quantity":1,"unit":"pack","estimatedCost_ZAR":24.99},
+        {"product":"Rolled Oats 1kg","quantity":1,"unit":"box","estimatedCost_ZAR":34.99},
+        {"product":"Sweet Potatoes 1kg","quantity":1,"unit":"bag","estimatedCost_ZAR":24.99},
+        {"product":"Butternut 1kg (pre-cut)","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},
+        {"product":"Broccoli Florets 350g","quantity":2,"unit":"pack","estimatedCost_ZAR":59.98},
+        {"product":"Brown Mushrooms 250g","quantity":1,"unit":"punnet","estimatedCost_ZAR":24.99},
+        {"product":"Bananas 1kg","quantity":2,"unit":"bunch","estimatedCost_ZAR":29.98},
+        {"product":"Smooth Cottage Cheese 250g","quantity":4,"unit":"tub","estimatedCost_ZAR":103.96},
+        {"product":"Fat Free Plain Yoghurt 500g","quantity":1,"unit":"tub","estimatedCost_ZAR":32.99},
+        {"product":"Cheddar Cheese 200g","quantity":1,"unit":"block","estimatedCost_ZAR":42.99},
+        {"product":"Low Fat Milk 1L","quantity":1,"unit":"bottle","estimatedCost_ZAR":21.99},
+        {"product":"Peanut Butter 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":39.99},
+        {"product":"Mixed Nuts 200g","quantity":1,"unit":"bag","estimatedCost_ZAR":59.99},
+        {"product":"Sliced Biltong 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":59.99},
+        {"product":"Napolitana Pasta Sauce 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":34.99},
+        {"product":"Soy Sauce 250ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":24.99},
+        {"product":"Futurelife Smart Food 500g","quantity":1,"unit":"box","estimatedCost_ZAR":54.99},
+        {"product":"Spray & Cook 300ml","quantity":1,"unit":"can","estimatedCost_ZAR":39.99},
+        {"product":"Chicken & Veg Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},
+        {"product":"Honey 375g","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},
+        {"product":"Lemon Juice 250ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":19.99},
+        {"product":"Rice Cakes 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":19.99}
+      ],
+      "estimatedTotal_ZAR": 1544.59
+    },
+    "week2": {
+      "tripDate": "2026-03-01",
+      "items": [
+        {"product":"Skinless Chicken Breast Fillets 900g","quantity":2,"unit":"pack","estimatedCost_ZAR":259.98},
+        {"product":"Lean Beef Mince 500g","quantity":2,"unit":"pack","estimatedCost_ZAR":119.98},
+        {"product":"Free Range Large Eggs 18s","quantity":2,"unit":"tray","estimatedCost_ZAR":119.98},
+        {"product":"Liquid Egg Whites 500ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},
+        {"product":"Hake Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":64.99},
+        {"product":"Basa Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":54.99},
+        {"product":"Wholewheat Bread 700g","quantity":1,"unit":"loaf","estimatedCost_ZAR":21.99},
+        {"product":"Penne Pasta 500g","quantity":1,"unit":"pack","estimatedCost_ZAR":24.99},
+        {"product":"Sweet Potatoes 1kg","quantity":1,"unit":"bag","estimatedCost_ZAR":24.99},
+        {"product":"Butternut 1kg (pre-cut)","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},
+        {"product":"Broccoli Florets 350g","quantity":2,"unit":"pack","estimatedCost_ZAR":59.98},
+        {"product":"Brown Mushrooms 250g","quantity":1,"unit":"punnet","estimatedCost_ZAR":24.99},
+        {"product":"Bananas 1kg","quantity":2,"unit":"bunch","estimatedCost_ZAR":29.98},
+        {"product":"Smooth Cottage Cheese 250g","quantity":4,"unit":"tub","estimatedCost_ZAR":103.96},
+        {"product":"Fat Free Plain Yoghurt 500g","quantity":1,"unit":"tub","estimatedCost_ZAR":32.99},
+        {"product":"Low Fat Milk 1L","quantity":1,"unit":"bottle","estimatedCost_ZAR":21.99},
+        {"product":"Sliced Biltong 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":59.99},
+        {"product":"Napolitana Pasta Sauce 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":34.99},
+        {"product":"Chicken & Veg Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},
+        {"product":"Chicken & Rice Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},
+        {"product":"Rice Cakes 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":19.99}
+      ],
+      "estimatedTotal_ZAR": 1270.68
+    }
+  },
+  "weeklyAverages": {
+    "week1": {"avgCalories":2348,"avgProtein_g":200,"avgCarbs_g":237,"avgFat_g":62},
+    "week2": {"avgCalories":2321,"avgProtein_g":202,"avgCarbs_g":226,"avgFat_g":63}
+  }
+};
+
+// ==================== STATE ====================
+let currentTab = 'dashboard';
+let selectedDay = 0;
+let selectedWeek = 'week1';
+const T = PLAN_DATA.dailyTargets;
+
+// ==================== HELPERS ====================
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return document.querySelectorAll(sel); }
+
+function pctDiff(actual, target) {
+  return Math.abs((actual - target) / target) * 100;
+}
+
+function colorClass(actual, target) {
+  const d = pctDiff(actual, target);
+  if (d <= 5) return 'cell-green';
+  if (d <= 10) return 'cell-yellow';
+  return 'cell-red';
+}
+
+function formatZAR(amount) {
+  return 'R' + amount.toFixed(2);
+}
+
+function slotLabel(slot) {
+  const map = {
+    'breakfast': 'Breakfast',
+    'lunch': 'Lunch',
+    'pre-workout': 'Pre-Workout',
+    'post-workout': 'Post-Workout',
+    'pre-bed': 'Pre-Bed'
+  };
+  return map[slot] || slot;
+}
+
+function getLS(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    return v !== null ? JSON.parse(v) : fallback;
+  } catch { return fallback; }
+}
+
+function setLS(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+// ==================== THEME ====================
+function initTheme() {
+  const saved = getLS('theme', 'dark');
+  document.documentElement.setAttribute('data-theme', saved);
+  updateThemeIcon(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  setLS('theme', next);
+  updateThemeIcon(next);
+}
+
+function updateThemeIcon(theme) {
+  $('#themeToggle').textContent = theme === 'dark' ? '\u2600' : '\u263E';
+}
+
+// ==================== TAB NAVIGATION ====================
+function switchTab(tab) {
+  currentTab = tab;
+  $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  $$('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  switch(tab) {
+    case 'dashboard': renderDashboard(); break;
+    case 'mealplan': renderMealPlan(); break;
+    case 'shopping': renderShopping(); break;
+    case 'nutrition': renderNutrition(); break;
+  }
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const el = $('#tab-dashboard');
+  const days = PLAN_DATA.days;
+  const w1Total = PLAN_DATA.shoppingLists.week1.estimatedTotal_ZAR;
+  const w2Total = PLAN_DATA.shoppingLists.week2.estimatedTotal_ZAR;
+
+  let tableRows = '';
+  days.forEach(d => {
+    const dt = d.dailyTotals;
+    tableRows += `<tr>
+      <td><strong>D${d.day}</strong></td>
+      <td>${d.dayOfWeek.slice(0,3)}</td>
+      <td><span class="${colorClass(dt.calories, T.calories)}">${dt.calories}</span></td>
+      <td><span class="${colorClass(dt.protein_g, T.protein_g)}">${dt.protein_g}g</span></td>
+      <td><span class="${colorClass(dt.carbs_g, T.carbs_g)}">${dt.carbs_g}g</span></td>
+      <td><span class="${colorClass(dt.fat_g, T.fat_g)}">${dt.fat_g}g</span></td>
+      <td>${d.prepDay ? '<span class="batch-badge">Prep</span>' : ''}</td>
+    </tr>`;
+  });
+
+  el.innerHTML = `
+    <div class="targets-grid">
+      <div class="target-card">
+        <div class="target-value" style="color:var(--calories)">${T.calories}<span class="target-unit"> cal</span></div>
+        <div class="target-label">Daily Calories</div>
+      </div>
+      <div class="target-card">
+        <div class="target-value" style="color:var(--protein)">${T.protein_g}<span class="target-unit">g</span></div>
+        <div class="target-label">Protein</div>
+      </div>
+      <div class="target-card">
+        <div class="target-value" style="color:var(--carbs)">${T.carbs_g}<span class="target-unit">g</span></div>
+        <div class="target-label">Carbs</div>
+      </div>
+      <div class="target-card">
+        <div class="target-value" style="color:var(--fat)">${T.fat_g}<span class="target-unit">g</span></div>
+        <div class="target-label">Fat</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">14-Day Summary</div>
+      <div class="summary-table-wrap">
+        <table class="summary-table">
+          <thead>
+            <tr><th>Day</th><th>Week</th><th>Calories</th><th>Protein</th><th>Carbs</th><th>Fat</th><th></th></tr>
+          </thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Estimated Grocery Cost</div>
+      <div class="cost-summary">
+        <div class="cost-item">Week 1: <strong>${formatZAR(w1Total)}</strong></div>
+        <div class="cost-item">Week 2: <strong>${formatZAR(w2Total)}</strong></div>
+        <div class="cost-item">Total: <strong style="color:var(--protein)">${formatZAR(w1Total + w2Total)}</strong></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Meal Timing Schedule</div>
+      <div class="timing-grid">
+        <div class="timing-slot">
+          <div class="timing-slot-name">Breakfast</div>
+          <div class="timing-slot-time">07:00 - 08:30</div>
+        </div>
+        <div class="timing-slot">
+          <div class="timing-slot-name">Lunch</div>
+          <div class="timing-slot-time">12:30</div>
+        </div>
+        <div class="timing-slot">
+          <div class="timing-slot-name">Pre-Workout</div>
+          <div class="timing-slot-time">15:30</div>
+        </div>
+        <div class="timing-slot">
+          <div class="timing-slot-name">Post-Workout</div>
+          <div class="timing-slot-time">18:30</div>
+        </div>
+        <div class="timing-slot">
+          <div class="timing-slot-name">Pre-Bed</div>
+          <div class="timing-slot-time">21:00</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== MEAL PLAN ====================
+function renderMealPlan() {
+  const el = $('#tab-mealplan');
+  const days = PLAN_DATA.days;
+  const day = days[selectedDay];
+
+  let dayBtns = '';
+  days.forEach((d, i) => {
+    dayBtns += `<button class="day-btn ${i === selectedDay ? 'active' : ''}" data-idx="${i}">
+      <span class="day-num">D${d.day}</span>
+      <span class="day-label">${d.dayOfWeek.slice(0,3)}</span>
+    </button>`;
+  });
+
+  let prepBanner = '';
+  if (day.prepDay && day.batchPrepInstructions) {
+    prepBanner = `
+      <div class="prep-banner">
+        <div class="prep-banner-icon">\uD83D\uDD2A</div>
+        <div>
+          <div class="prep-banner-title">Batch Prep Day</div>
+          <div class="prep-banner-text">${day.batchPrepInstructions}</div>
+        </div>
+      </div>`;
+  }
+
+  let mealCards = '';
+  day.meals.forEach((m, mi) => {
+    const ingId = `ing-${selectedDay}-${mi}`;
+    const prepId = `prep-${selectedDay}-${mi}`;
+
+    let ingList = '';
+    m.ingredients.forEach(ing => {
+      ingList += `<li><span>${ing.item}</span><span class="qty">${ing.quantity_g}g ${ing.notes ? '(' + ing.notes + ')' : ''}</span></li>`;
+    });
+
+    mealCards += `
+      <div class="meal-card">
+        <div class="meal-card-header">
+          <div>
+            <div class="meal-slot-time">${slotLabel(m.slot)} \u2014 ${m.time}</div>
+            <div class="meal-name">${m.name}</div>
+          </div>
+          ${m.batchPrep ? '<span class="batch-badge">Batch Prep</span>' : ''}
+        </div>
+        <div class="meal-macros">
+          <div class="macro-badges">
+            <span class="macro-badge protein"><span class="macro-badge-label">P</span> ${m.macros.protein_g}g</span>
+            <span class="macro-badge carbs"><span class="macro-badge-label">C</span> ${m.macros.carbs_g}g</span>
+            <span class="macro-badge fat"><span class="macro-badge-label">F</span> ${m.macros.fat_g}g</span>
+            <span class="macro-badge cal"><span class="macro-badge-label">Cal</span> ${m.macros.calories}</span>
+          </div>
+        </div>
+        <div class="expandable">
+          <button class="expand-btn" data-target="${ingId}"><span class="arrow">\u25B6</span> Ingredients (${m.ingredients.length})</button>
+          <div class="expand-content" id="${ingId}">
+            <ul class="ingredient-list">${ingList}</ul>
+          </div>
+        </div>
+        <div class="expandable">
+          <button class="expand-btn" data-target="${prepId}"><span class="arrow">\u25B6</span> Prep Instructions</button>
+          <div class="expand-content" id="${prepId}">
+            <div class="prep-text">${m.prep}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  const dt = day.dailyTotals;
+  el.innerHTML = `
+    <div class="day-selector">${dayBtns}</div>
+    ${prepBanner}
+    ${mealCards}
+    <div class="day-totals-bar">
+      <span class="day-totals-label">Day ${day.day} Totals</span>
+      <div class="macro-badges">
+        <span class="macro-badge protein"><span class="macro-badge-label">P</span> ${dt.protein_g}g</span>
+        <span class="macro-badge carbs"><span class="macro-badge-label">C</span> ${dt.carbs_g}g</span>
+        <span class="macro-badge fat"><span class="macro-badge-label">F</span> ${dt.fat_g}g</span>
+        <span class="macro-badge cal"><span class="macro-badge-label">Cal</span> ${dt.calories}</span>
+      </div>
+    </div>`;
+
+  // Bind day selector
+  el.querySelectorAll('.day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDay = parseInt(btn.dataset.idx);
+      renderMealPlan();
+    });
+  });
+
+  // Bind expandables
+  el.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.target);
+      btn.classList.toggle('open');
+      target.classList.toggle('open');
+    });
+  });
+}
+
+// ==================== SHOPPING LIST ====================
+function getCheckedItems(week) {
+  return getLS('shopping_checked_' + week, {});
+}
+
+function setCheckedItems(week, data) {
+  setLS('shopping_checked_' + week, data);
+}
+
+function renderShopping() {
+  const el = $('#tab-shopping');
+  const list = PLAN_DATA.shoppingLists[selectedWeek];
+  const checked = getCheckedItems(selectedWeek);
+
+  let weekBtns = `
+    <button class="week-btn ${selectedWeek === 'week1' ? 'active' : ''}" data-week="week1">Week 1 (${PLAN_DATA.shoppingLists.week1.tripDate})</button>
+    <button class="week-btn ${selectedWeek === 'week2' ? 'active' : ''}" data-week="week2">Week 2 (${PLAN_DATA.shoppingLists.week2.tripDate})</button>
+  `;
+
+  let items = '';
+  list.items.forEach((item, i) => {
+    const isChecked = checked[i] === true;
+    items += `
+      <div class="shopping-item ${isChecked ? 'checked' : ''}">
+        <input type="checkbox" class="shopping-checkbox" data-idx="${i}" ${isChecked ? 'checked' : ''}>
+        <span class="shopping-product">${item.product}</span>
+        <span class="shopping-qty">${item.quantity} ${item.unit}</span>
+        <span class="shopping-cost">${formatZAR(item.estimatedCost_ZAR)}</span>
+      </div>`;
+  });
+
+  el.innerHTML = `
+    <div class="week-toggle">${weekBtns}</div>
+    <div class="card">
+      <div class="shopping-header">
+        <div class="card-title">Shopping List \u2014 ${selectedWeek === 'week1' ? 'Week 1' : 'Week 2'}</div>
+        <button class="clear-btn" id="clearAll">Clear All</button>
+      </div>
+      ${items}
+      <div class="shopping-total">
+        <span>Estimated Total</span>
+        <span style="color:var(--protein)">${formatZAR(list.estimatedTotal_ZAR)}</span>
+      </div>
+    </div>`;
+
+  // Bind week toggle
+  el.querySelectorAll('.week-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedWeek = btn.dataset.week;
+      renderShopping();
+    });
+  });
+
+  // Bind checkboxes
+  el.querySelectorAll('.shopping-checkbox').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const data = getCheckedItems(selectedWeek);
+      const idx = parseInt(cb.dataset.idx);
+      if (cb.checked) data[idx] = true;
+      else delete data[idx];
+      setCheckedItems(selectedWeek, data);
+      const parent = cb.closest('.shopping-item');
+      parent.classList.toggle('checked', cb.checked);
+    });
+  });
+
+  // Clear all
+  el.querySelector('#clearAll').addEventListener('click', () => {
+    setCheckedItems(selectedWeek, {});
+    renderShopping();
+  });
+}
+
+// ==================== NUTRITION ====================
+function renderNutrition() {
+  const el = $('#tab-nutrition');
+  const days = PLAN_DATA.days;
+  const wa = PLAN_DATA.weeklyAverages;
+
+  // Overall averages for donut
+  const avgP = Math.round((wa.week1.avgProtein_g + wa.week2.avgProtein_g) / 2);
+  const avgC = Math.round((wa.week1.avgCarbs_g + wa.week2.avgCarbs_g) / 2);
+  const avgF = Math.round((wa.week1.avgFat_g + wa.week2.avgFat_g) / 2);
+  const pCal = avgP * 4;
+  const cCal = avgC * 4;
+  const fCal = avgF * 9;
+  const totalCal = pCal + cCal + fCal;
+  const pPct = (pCal / totalCal * 100);
+  const cPct = (cCal / totalCal * 100);
+  const fPct = (fCal / totalCal * 100);
+
+  const donutGradient = `conic-gradient(
+    var(--protein) 0deg ${pPct * 3.6}deg,
+    var(--carbs) ${pPct * 3.6}deg ${(pPct + cPct) * 3.6}deg,
+    var(--fat) ${(pPct + cPct) * 3.6}deg 360deg
+  )`;
+
+  // Calorie bar chart
+  const maxCal = Math.max(...days.map(d => d.dailyTotals.calories), T.calories + 100);
+  const chartHeight = 130;
+  const targetPx = (T.calories / maxCal) * chartHeight;
+
+  let calBars = '';
+  days.forEach(d => {
+    const h = (d.dailyTotals.calories / maxCal) * chartHeight;
+    const isOver = d.dailyTotals.calories > T.calories * 1.05;
+    const color = isOver ? 'var(--calories)' : 'var(--protein)';
+    calBars += `<div class="bar-col">
+      <div class="bar" style="height:${h}px; background:${color};">
+        <span class="bar-value">${d.dailyTotals.calories}</span>
+      </div>
+      <span class="bar-label">D${d.day}</span>
+    </div>`;
+  });
+
+  // Protein bar chart
+  const maxProt = Math.max(...days.map(d => d.dailyTotals.protein_g), T.protein_g + 20);
+  const protTargetPx = (T.protein_g / maxProt) * chartHeight;
+
+  let protBars = '';
+  days.forEach(d => {
+    const h = (d.dailyTotals.protein_g / maxProt) * chartHeight;
+    const isLow = d.dailyTotals.protein_g < T.protein_g * 0.95;
+    const color = isLow ? 'var(--carbs)' : 'var(--protein)';
+    protBars += `<div class="bar-col">
+      <div class="bar" style="height:${h}px; background:${color};">
+        <span class="bar-value">${d.dailyTotals.protein_g}g</span>
+      </div>
+      <span class="bar-label">D${d.day}</span>
+    </div>`;
+  });
+
+  el.innerHTML = `
+    <div class="nutrition-grid">
+      <div class="card">
+        <div class="card-title">Macro Breakdown (Avg)</div>
+        <div class="donut-chart-container">
+          <div class="donut-chart" style="background:${donutGradient};">
+            <div class="donut-hole">
+              <div class="donut-hole-value">${Math.round(totalCal)}</div>
+              <div class="donut-hole-label">cal/day</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--protein)"></span>Protein ${Math.round(pPct)}%</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--carbs)"></span>Carbs ${Math.round(cPct)}%</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--fat)"></span>Fat ${Math.round(fPct)}%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Weekly Averages</div>
+        <div class="averages-grid" style="grid-template-columns:1fr;">
+          <div class="avg-card">
+            <div class="avg-card-title">Week 1 (Days 1-7)</div>
+            <div class="avg-row"><span class="avg-row-label">Calories</span><span class="avg-row-value" style="color:var(--calories)">${wa.week1.avgCalories} cal</span></div>
+            <div class="avg-row"><span class="avg-row-label">Protein</span><span class="avg-row-value" style="color:var(--protein)">${wa.week1.avgProtein_g}g</span></div>
+            <div class="avg-row"><span class="avg-row-label">Carbs</span><span class="avg-row-value" style="color:var(--carbs)">${wa.week1.avgCarbs_g}g</span></div>
+            <div class="avg-row"><span class="avg-row-label">Fat</span><span class="avg-row-value" style="color:var(--fat)">${wa.week1.avgFat_g}g</span></div>
+          </div>
+          <div class="avg-card">
+            <div class="avg-card-title">Week 2 (Days 8-14)</div>
+            <div class="avg-row"><span class="avg-row-label">Calories</span><span class="avg-row-value" style="color:var(--calories)">${wa.week2.avgCalories} cal</span></div>
+            <div class="avg-row"><span class="avg-row-label">Protein</span><span class="avg-row-value" style="color:var(--protein)">${wa.week2.avgProtein_g}g</span></div>
+            <div class="avg-row"><span class="avg-row-label">Carbs</span><span class="avg-row-value" style="color:var(--carbs)">${wa.week2.avgCarbs_g}g</span></div>
+            <div class="avg-row"><span class="avg-row-label">Fat</span><span class="avg-row-value" style="color:var(--fat)">${wa.week2.avgFat_g}g</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Daily Calories (Target: ${T.calories})</div>
+      <div class="bar-chart">
+        <div class="bar-chart-target" style="bottom:${targetPx + 24}px;">
+          <span class="bar-chart-target-label">${T.calories} target</span>
+        </div>
+        ${calBars}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">Daily Protein (Target: ${T.protein_g}g)</div>
+      <div class="bar-chart">
+        <div class="bar-chart-target" style="bottom:${protTargetPx + 24}px;">
+          <span class="bar-chart-target-label">${T.protein_g}g target</span>
+        </div>
+        ${protBars}
+      </div>
+    </div>
+  `;
+}
+
+// ==================== INIT ====================
+function init() {
+  initTheme();
+  renderDashboard();
+
+  // Tab nav
+  $$('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Theme toggle
+  $('#themeToggle').addEventListener('click', toggleTheme);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
