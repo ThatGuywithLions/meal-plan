@@ -538,6 +538,123 @@ body {
   margin-top: 8px;
 }
 
+/* Tracking Strip */
+.tracking-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-light);
+  margin-top: 8px;
+}
+
+.track-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  gap: 4px;
+}
+
+.track-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.track-btn.active-done { background: rgba(76,175,80,0.2); border-color: var(--protein); color: var(--protein); }
+.track-btn.active-up { background: rgba(76,175,80,0.2); border-color: var(--protein); color: var(--protein); }
+.track-btn.active-down { background: rgba(244,67,54,0.2); border-color: var(--calories); color: var(--calories); }
+.track-btn.active-skip { background: rgba(255,152,0,0.2); border-color: var(--carbs); color: var(--carbs); }
+
+.meal-card.tracked { border-left: 3px solid var(--protein); }
+.meal-card.skipped { opacity: 0.6; border-left: 3px solid var(--carbs); }
+
+.track-notes-area { width: 100%; margin-top: 6px; display: none; }
+.track-notes-area.open { display: block; }
+
+.track-notes-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 36px;
+  max-height: 100px;
+}
+
+.track-notes-input:focus, .track-sub-input:focus { outline: none; border-color: var(--protein); }
+.track-notes-input::placeholder, .track-sub-input::placeholder { color: var(--text-muted); }
+
+.track-sub-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  margin-top: 6px;
+}
+
+.tracking-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tracking-stat {
+  text-align: center;
+  padding: 12px 8px;
+  background: var(--badge-bg);
+  border-radius: 10px;
+}
+
+.tracking-stat-value { font-size: 24px; font-weight: 700; }
+.tracking-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-top: 2px; }
+
+.tracking-progress { height: 8px; background: var(--bar-bg); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+.tracking-progress-fill { height: 100%; background: var(--protein); border-radius: 4px; transition: width 0.5s ease; }
+
+.tracking-notes-list { list-style: none; padding: 0; }
+.tracking-notes-list li { font-size: 13px; color: var(--text-secondary); padding: 6px 0; border-bottom: 1px solid var(--border-light); }
+.tracking-notes-list li:last-child { border-bottom: none; }
+.tracking-notes-list .note-meal { font-weight: 600; color: var(--text-primary); }
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--protein);
+  background: rgba(76,175,80,0.15);
+  color: var(--protein);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.export-btn:hover { background: rgba(76,175,80,0.25); }
+.export-msg { display: inline-block; margin-left: 12px; font-size: 13px; color: var(--protein); font-weight: 600; opacity: 0; transition: opacity 0.3s; }
+.export-msg.show { opacity: 1; }
+
+.prep-only-msg { text-align: center; padding: 30px 20px; color: var(--text-secondary); font-size: 15px; }
+
 /* Day Totals Bar */
 .day-totals-bar {
   background: var(--bg-card);
@@ -879,6 +996,7 @@ body {
   .bar-chart { gap: 2px; }
   .main { padding: 12px 10px 30px; }
   .averages-grid { grid-template-columns: 1fr; }
+  .tracking-summary-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 480px) {
@@ -888,6 +1006,8 @@ body {
   .meal-card { padding: 12px 14px; }
   .macro-badges { gap: 4px; }
   .macro-badge { padding: 3px 7px; font-size: 11px; }
+  .tracking-strip { gap: 6px; }
+  .track-btn { min-width: 40px; min-height: 40px; padding: 5px 8px; font-size: 12px; }
 }
 </style>
 </head>
@@ -922,243 +1042,11 @@ body {
 
 <script>
 // ==================== DATA ====================
-const PLAN_DATA = {
-  "planId": "plan-001",
-  "startDate": "2026-02-22",
-  "endDate": "2026-03-08",
-  "dailyTargets": { "calories": 2300, "protein_g": 200, "carbs_g": 218, "fat_g": 70 },
-  "days": [
-    {
-      "day": 1, "dayOfWeek": "Sunday", "date": "2026-02-22", "prepDay": true,
-      "batchPrepInstructions": "Batch cook: 1.8kg chicken breast (season with paprika, garlic, salt \u2014 grill or bake). Cook 800g dry rice. Boil 18 eggs. Brown 800g lean mince with onion and garlic. Roast 600g butternut cubes. Store in containers for the week.",
-      "meals": [
-        { "slot": "breakfast", "time": "08:30", "name": "Scrambled Eggs with Toast & Banana", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22}, "prep": "Scramble 4 eggs in non-stick pan with spray oil. Toast bread. Eat banana on the side.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut in microwave.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":485,"protein_g":44,"carbs_g":58,"fat_g":5}, "prep": "Reheat chicken and rice. Microwave steam broccoli for 3 min.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended into shake"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":30,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":28,"carbs_g":11,"fat_g":24}, "prep": "Serve cottage cheese in bowl, top with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2373,"protein_g":191,"carbs_g":251,"fat_g":63}
-    },
-    {
-      "day": 2, "dayOfWeek": "Monday", "date": "2026-02-23", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water in microwave 3 min. Stir in whey protein. Top with sliced banana and peanut butter.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne or fusilli"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat batch-cooked mince with pasta sauce. Cook pasta fresh or reheat. Combine.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":170,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":80,"notes":"microwave steamed"}], "macros": {"calories":465,"protein_g":44,"carbs_g":53,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended into shake"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Fat Free Yoghurt with Whey & Nuts", "ingredients": [{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12}, "prep": "Mix whey into yoghurt. Top with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2398,"protein_g":213,"carbs_g":261,"fat_g":57}
-    },
-    {
-      "day": 3, "dayOfWeek": "Tuesday", "date": "2026-02-24", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Egg White Omelette with Toast", "ingredients": [{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20}, "prep": "Whisk egg whites and whole eggs. Cook in non-stick pan with spray oil. Add cheese before folding. Serve with toast.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Chicken & Rice with Mushroom Sauce", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Mushrooms","quantity_g":100,"notes":"sliced, pan-fried"},{"item":"Low Fat Milk","quantity_g":50,"notes":"for sauce"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":542,"protein_g":51,"carbs_g":58,"fat_g":8}, "prep": "Sautee mushrooms in spray oil. Add a splash of milk, season. Serve over reheated chicken and rice.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Sweet Potato (baked)","quantity_g":250,"notes":"microwave baked"}], "macros": {"calories":521,"protein_g":40,"carbs_g":50,"fat_g":16}, "prep": "Microwave sweet potato 6-8 min. Reheat batch-cooked mince. Serve together.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":486,"protein_g":44,"carbs_g":62,"fat_g":5}, "prep": "Reheat chicken and rice. Drizzle with soy sauce.", "batchPrep": true },
-        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}], "macros": {"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21}, "prep": "Serve cottage cheese in bowl, top with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2362,"protein_g":203,"carbs_g":209,"fat_g":70}
-    },
-    {
-      "day": 4, "dayOfWeek": "Wednesday", "date": "2026-02-25", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Futurelife Cereal with Milk & Boiled Eggs", "ingredients": [{"item":"Futurelife Smart Food","quantity_g":50,"notes":"1 serving"},{"item":"Low Fat Milk","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs (boiled)","quantity_g":150,"notes":"3 eggs, from batch"}], "macros": {"calories":515,"protein_g":36,"carbs_g":42,"fat_g":22}, "prep": "Pour cereal into bowl, add milk. Peel 3 batch-boiled eggs and eat on the side.", "batchPrep": true },
-        { "slot": "lunch", "time": "12:30", "name": "Hake Fillet with Sweet Potato & Steamed Broccoli", "ingredients": [{"item":"Hake Fillets","quantity_g":250,"notes":"2 fillets"},{"item":"Sweet Potato (baked)","quantity_g":200,"notes":"microwave baked"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"},{"item":"Lemon Juice","quantity_g":10,"notes":"squeeze over fish"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":507,"protein_g":53,"carbs_g":54,"fat_g":4}, "prep": "Pan-fry hake in spray oil 3-4 min each side. Microwave sweet potato and steam broccoli. Squeeze lemon over fish.", "batchPrep": false },
-        { "slot": "pre-workout", "time": "15:30", "name": "Whey Shake with Banana, Oats & Rice Cakes", "ingredients": [{"item":"Whey Protein","quantity_g":60,"notes":"2 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":50,"notes":"raw, blended"},{"item":"Rice Cakes","quantity_g":18,"notes":"2 cakes"},{"item":"Water","quantity_g":400,"notes":"for shake"}], "macros": {"calories":517,"protein_g":52,"carbs_g":69,"fat_g":6}, "prep": "Blend whey, oats, banana, and water. Eat rice cakes on the side.", "batchPrep": false },
-        { "slot": "post-workout", "time": "18:30", "name": "Lean Mince Pasta with Tomato Sauce", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":160,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":504,"protein_g":38,"carbs_g":50,"fat_g":16}, "prep": "Cook pasta. Reheat mince with sauce. Combine.", "batchPrep": true },
-        { "slot": "pre-bed", "time": "21:00", "name": "Scrambled Eggs with Cheese", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27}, "prep": "Scramble 3 eggs in non-stick pan. Add cheese slice on top to melt.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2387,"protein_g":204,"carbs_g":217,"fat_g":75}
-    },
-    {
-      "day": 5, "dayOfWeek": "Thursday", "date": "2026-02-26", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Cottage Cheese Oats with Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":150,"notes":"smooth"},{"item":"Oats","quantity_g":70,"notes":"raw, cooked with water"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted, chopped"},{"item":"Honey","quantity_g":10,"notes":"drizzle"},{"item":"Water","quantity_g":200,"notes":"for oats"}], "macros": {"calories":502,"protein_g":29,"carbs_g":59,"fat_g":18}, "prep": "Cook oats with water. Stir in cottage cheese. Top with nuts and honey drizzle.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Basa Fillet with Rice", "ingredients": [{"item":"Basa Fillets","quantity_g":220,"notes":"2 fillets"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":442,"protein_g":42,"carbs_g":51,"fat_g":5}, "prep": "Pan-fry basa in spray oil 3-4 min each side. Reheat rice. Drizzle soy sauce.", "batchPrep": false },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Biltong with Cottage Cheese", "ingredients": [{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}], "macros": {"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7}, "prep": "Serve biltong with cottage cheese on the side.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2198,"protein_g":200,"carbs_g":247,"fat_g":42}
-    },
-    {
-      "day": 6, "dayOfWeek": "Friday", "date": "2026-02-27", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Scrambled Eggs with Toast & Banana", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22}, "prep": "Scramble 4 eggs. Toast bread. Banana on the side.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat mince with sauce. Cook or reheat pasta. Combine.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":446,"protein_g":44,"carbs_g":49,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5}, "prep": "Reheat chicken and rice. Season with soy sauce.", "batchPrep": true },
-        { "slot": "pre-bed", "time": "21:00", "name": "Fat Free Yoghurt with Whey & Nuts", "ingredients": [{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12}, "prep": "Mix whey into yoghurt. Top with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2366,"protein_g":205,"carbs_g":224,"fat_g":64}
-    },
-    {
-      "day": 7, "dayOfWeek": "Saturday", "date": "2026-02-28", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "08:30", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water. Stir in whey. Top with banana and peanut butter.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Woolworths Chicken Ready Meal with Extra Protein", "ingredients": [{"item":"Woolworths Chicken & Veg Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Free Range Large Eggs (boiled)","quantity_g":100,"notes":"2 eggs, from batch"}], "macros": {"calories":516,"protein_g":40,"carbs_g":45,"fat_g":18}, "prep": "Microwave ready meal per instructions. Eat 2 boiled eggs on the side.", "batchPrep": false },
-        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook (last portions)"},{"item":"Sweet Potato (baked)","quantity_g":220,"notes":"microwave baked"}], "macros": {"calories":495,"protein_g":40,"carbs_g":44,"fat_g":16}, "prep": "Microwave sweet potato. Reheat last of batch-cooked mince.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Scrambled Eggs with Cheese", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27}, "prep": "Scramble 3 eggs. Top with cheese slice to melt.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2339,"protein_g":185,"carbs_g":228,"fat_g":81}
-    },
-    {
-      "day": 8, "dayOfWeek": "Sunday", "date": "2026-03-01", "prepDay": true,
-      "batchPrepInstructions": "Week 2 batch cook: 1.8kg chicken breast (season with lemon pepper, garlic, salt \u2014 grill or bake). Cook 800g dry rice. Boil 18 eggs. Brown 800g lean mince with onion and garlic. Roast 600g butternut cubes. Store in portioned containers for the week.",
-      "meals": [
-        { "slot": "breakfast", "time": "08:30", "name": "Egg White Omelette with Toast", "ingredients": [{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20}, "prep": "Whisk egg whites and whole eggs. Cook omelette, add cheese. Serve with toast.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":485,"protein_g":44,"carbs_g":58,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":30,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":28,"carbs_g":11,"fat_g":24}, "prep": "Serve cottage cheese in bowl, top with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2340,"protein_g":205,"carbs_g":230,"fat_g":61}
-    },
-    {
-      "day": 9, "dayOfWeek": "Monday", "date": "2026-03-02", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water in microwave. Stir in whey. Top with banana and peanut butter.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Chicken & Rice with Mushroom Sauce", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Mushrooms","quantity_g":100,"notes":"sliced, pan-fried"},{"item":"Low Fat Milk","quantity_g":50,"notes":"for sauce"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":542,"protein_g":51,"carbs_g":58,"fat_g":8}, "prep": "Sautee mushrooms. Add milk splash, season. Serve over reheated chicken and rice.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Sweet Potato (baked)","quantity_g":250,"notes":"microwave baked"}], "macros": {"calories":521,"protein_g":40,"carbs_g":50,"fat_g":16}, "prep": "Microwave sweet potato. Reheat batch-cooked mince.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5}, "prep": "Reheat chicken and rice. Season with soy sauce.", "batchPrep": true },
-        { "slot": "pre-bed", "time": "21:00", "name": "Biltong with Cottage Cheese", "ingredients": [{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}], "macros": {"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7}, "prep": "Serve biltong with cottage cheese.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2282,"protein_g":211,"carbs_g":236,"fat_g":49}
-    },
-    {
-      "day": 10, "dayOfWeek": "Tuesday", "date": "2026-03-03", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Futurelife Cereal with Milk & Boiled Eggs", "ingredients": [{"item":"Futurelife Smart Food","quantity_g":50,"notes":"1 serving"},{"item":"Low Fat Milk","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs (boiled)","quantity_g":150,"notes":"3 eggs, from batch"}], "macros": {"calories":515,"protein_g":36,"carbs_g":42,"fat_g":22}, "prep": "Pour cereal, add milk. Eat 3 batch-boiled eggs on the side.", "batchPrep": true },
-        { "slot": "lunch", "time": "12:30", "name": "Hake Fillet with Sweet Potato & Steamed Broccoli", "ingredients": [{"item":"Hake Fillets","quantity_g":250,"notes":"2 fillets"},{"item":"Sweet Potato (baked)","quantity_g":200,"notes":"microwave baked"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"},{"item":"Lemon Juice","quantity_g":10,"notes":"squeeze over fish"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":507,"protein_g":53,"carbs_g":54,"fat_g":4}, "prep": "Pan-fry hake in spray oil. Microwave sweet potato and steam broccoli.", "batchPrep": false },
-        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":170,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":80,"notes":"microwave steamed"}], "macros": {"calories":465,"protein_g":44,"carbs_g":53,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli in microwave.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Lean Mince Pasta with Tomato Sauce", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":160,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":504,"protein_g":38,"carbs_g":50,"fat_g":16}, "prep": "Cook pasta. Reheat mince with sauce. Combine.", "batchPrep": true },
-        { "slot": "pre-bed", "time": "21:00", "name": "Fat Free Yoghurt with Whey & Nuts", "ingredients": [{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}], "macros": {"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12}, "prep": "Mix whey into yoghurt. Top with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2363,"protein_g":212,"carbs_g":222,"fat_g":59}
-    },
-    {
-      "day": 11, "dayOfWeek": "Wednesday", "date": "2026-03-04", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Scrambled Eggs with Toast & Banana", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22}, "prep": "Scramble 4 eggs. Toast bread. Banana on the side.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat mince with sauce. Cook or reheat pasta. Combine.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Whey Shake with Banana, Oats & Rice Cakes", "ingredients": [{"item":"Whey Protein","quantity_g":60,"notes":"2 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":50,"notes":"raw, blended"},{"item":"Rice Cakes","quantity_g":18,"notes":"2 cakes"},{"item":"Water","quantity_g":400,"notes":"for shake"}], "macros": {"calories":517,"protein_g":52,"carbs_g":69,"fat_g":6}, "prep": "Blend whey, oats, banana, and water. Eat rice cakes on the side.", "batchPrep": false },
-        { "slot": "post-workout", "time": "18:30", "name": "Chicken Breast with Rice", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}], "macros": {"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5}, "prep": "Reheat chicken and rice. Drizzle soy sauce.", "batchPrep": true },
-        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}], "macros": {"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21}, "prep": "Serve cottage cheese topped with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2408,"protein_g":198,"carbs_g":232,"fat_g":74}
-    },
-    {
-      "day": 12, "dayOfWeek": "Thursday", "date": "2026-03-05", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Cottage Cheese Oats with Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":150,"notes":"smooth"},{"item":"Oats","quantity_g":70,"notes":"raw, cooked with water"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted, chopped"},{"item":"Honey","quantity_g":10,"notes":"drizzle"},{"item":"Water","quantity_g":200,"notes":"for oats"}], "macros": {"calories":502,"protein_g":29,"carbs_g":59,"fat_g":18}, "prep": "Cook oats with water. Stir in cottage cheese. Top with nuts and honey.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Grilled Chicken Breast with Rice & Roasted Butternut", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}], "macros": {"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5}, "prep": "Reheat batch-cooked chicken, rice, and butternut.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Basa Fillet with Rice", "ingredients": [{"item":"Basa Fillets","quantity_g":220,"notes":"2 fillets"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}], "macros": {"calories":442,"protein_g":42,"carbs_g":51,"fat_g":5}, "prep": "Pan-fry basa in spray oil 3-4 min each side. Reheat rice. Drizzle soy sauce.", "batchPrep": false },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Scrambled Eggs with Cheese", "ingredients": [{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27}, "prep": "Scramble 3 eggs. Top with cheese slice to melt.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2301,"protein_g":187,"carbs_g":245,"fat_g":62}
-    },
-    {
-      "day": 13, "dayOfWeek": "Friday", "date": "2026-03-06", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "07:00", "name": "Egg White Omelette with Toast", "ingredients": [{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}], "macros": {"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20}, "prep": "Whisk egg whites and whole eggs. Cook omelette, add cheese. Serve with toast.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Lean Beef Mince Bolognese with Pasta", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}], "macros": {"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20}, "prep": "Reheat mince with sauce. Cook or reheat pasta. Combine.", "batchPrep": true },
-        { "slot": "pre-workout", "time": "15:30", "name": "Chicken Breast with Rice & Steamed Veg", "ingredients": [{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Broccoli (steamed)","quantity_g":100,"notes":"microwave steamed"}], "macros": {"calories":446,"protein_g":44,"carbs_g":49,"fat_g":5}, "prep": "Reheat chicken and rice. Steam broccoli.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Woolworths Chicken Ready Meal with Whey Shake", "ingredients": [{"item":"Woolworths Chicken & Rice Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop in water"},{"item":"Water","quantity_g":300,"notes":"for shake"}], "macros": {"calories":480,"protein_g":42,"carbs_g":48,"fat_g":12}, "prep": "Microwave ready meal. Mix whey shake on the side. Add creatine to shake.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Cottage Cheese with Mixed Nuts", "ingredients": [{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}], "macros": {"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21}, "prep": "Serve cottage cheese topped with nuts.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2316,"protein_g":202,"carbs_g":184,"fat_g":78}
-    },
-    {
-      "day": 14, "dayOfWeek": "Saturday", "date": "2026-03-07", "prepDay": false,
-      "meals": [
-        { "slot": "breakfast", "time": "08:30", "name": "Oats with Whey, Peanut Butter & Banana", "ingredients": [{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}], "macros": {"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13}, "prep": "Cook oats with water. Stir in whey. Top with banana and peanut butter.", "batchPrep": false },
-        { "slot": "lunch", "time": "12:30", "name": "Woolworths Chicken Ready Meal with Extra Protein", "ingredients": [{"item":"Woolworths Chicken & Veg Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Free Range Large Eggs (boiled)","quantity_g":100,"notes":"2 eggs, from batch"}], "macros": {"calories":516,"protein_g":40,"carbs_g":45,"fat_g":18}, "prep": "Microwave ready meal. Eat 2 boiled eggs on the side.", "batchPrep": false },
-        { "slot": "pre-workout", "time": "15:30", "name": "Lean Mince with Sweet Potato", "ingredients": [{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook (last portions)"},{"item":"Sweet Potato (baked)","quantity_g":220,"notes":"microwave baked"}], "macros": {"calories":495,"protein_g":40,"carbs_g":44,"fat_g":16}, "prep": "Microwave sweet potato. Reheat last of batch-cooked mince.", "batchPrep": true },
-        { "slot": "post-workout", "time": "18:30", "name": "Whey Shake with Banana & Oats", "ingredients": [{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}], "macros": {"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7}, "prep": "Blend whey, oats, banana, and water. Add creatine 5g.", "batchPrep": false },
-        { "slot": "pre-bed", "time": "21:00", "name": "Biltong with Cottage Cheese", "ingredients": [{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}], "macros": {"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7}, "prep": "Serve biltong with cottage cheese.", "batchPrep": false }
-      ],
-      "dailyTotals": {"calories":2236,"protein_g":198,"carbs_g":230,"fat_g":61}
-    }
-  ],
-  "shoppingLists": {
-    "week1": {
-      "tripDate": "2026-02-22",
-      "items": [
-        {"product":"Skinless Chicken Breast Fillets 900g","quantity":2,"unit":"pack","estimatedCost_ZAR":259.98},
-        {"product":"Lean Beef Mince 500g","quantity":2,"unit":"pack","estimatedCost_ZAR":119.98},
-        {"product":"Free Range Large Eggs 18s","quantity":2,"unit":"tray","estimatedCost_ZAR":119.98},
-        {"product":"Liquid Egg Whites 500ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},
-        {"product":"Hake Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":64.99},
-        {"product":"Basa Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":54.99},
-        {"product":"Wholewheat Bread 700g","quantity":1,"unit":"loaf","estimatedCost_ZAR":21.99},
-        {"product":"White Rice 2kg","quantity":1,"unit":"bag","estimatedCost_ZAR":39.99},
-        {"product":"Penne Pasta 500g","quantity":1,"unit":"pack","estimatedCost_ZAR":24.99},
-        {"product":"Rolled Oats 1kg","quantity":1,"unit":"box","estimatedCost_ZAR":34.99},
-        {"product":"Sweet Potatoes 1kg","quantity":1,"unit":"bag","estimatedCost_ZAR":24.99},
-        {"product":"Butternut 1kg (pre-cut)","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},
-        {"product":"Broccoli Florets 350g","quantity":2,"unit":"pack","estimatedCost_ZAR":59.98},
-        {"product":"Brown Mushrooms 250g","quantity":1,"unit":"punnet","estimatedCost_ZAR":24.99},
-        {"product":"Bananas 1kg","quantity":2,"unit":"bunch","estimatedCost_ZAR":29.98},
-        {"product":"Smooth Cottage Cheese 250g","quantity":4,"unit":"tub","estimatedCost_ZAR":103.96},
-        {"product":"Fat Free Plain Yoghurt 500g","quantity":1,"unit":"tub","estimatedCost_ZAR":32.99},
-        {"product":"Cheddar Cheese 200g","quantity":1,"unit":"block","estimatedCost_ZAR":42.99},
-        {"product":"Low Fat Milk 1L","quantity":1,"unit":"bottle","estimatedCost_ZAR":21.99},
-        {"product":"Peanut Butter 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":39.99},
-        {"product":"Mixed Nuts 200g","quantity":1,"unit":"bag","estimatedCost_ZAR":59.99},
-        {"product":"Sliced Biltong 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":59.99},
-        {"product":"Napolitana Pasta Sauce 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":34.99},
-        {"product":"Soy Sauce 250ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":24.99},
-        {"product":"Futurelife Smart Food 500g","quantity":1,"unit":"box","estimatedCost_ZAR":54.99},
-        {"product":"Spray & Cook 300ml","quantity":1,"unit":"can","estimatedCost_ZAR":39.99},
-        {"product":"Chicken & Veg Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},
-        {"product":"Honey 375g","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},
-        {"product":"Lemon Juice 250ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":19.99},
-        {"product":"Rice Cakes 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":19.99}
-      ],
-      "estimatedTotal_ZAR": 1544.59
-    },
-    "week2": {
-      "tripDate": "2026-03-01",
-      "items": [
-        {"product":"Skinless Chicken Breast Fillets 900g","quantity":2,"unit":"pack","estimatedCost_ZAR":259.98},
-        {"product":"Lean Beef Mince 500g","quantity":2,"unit":"pack","estimatedCost_ZAR":119.98},
-        {"product":"Free Range Large Eggs 18s","quantity":2,"unit":"tray","estimatedCost_ZAR":119.98},
-        {"product":"Liquid Egg Whites 500ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},
-        {"product":"Hake Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":64.99},
-        {"product":"Basa Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":54.99},
-        {"product":"Wholewheat Bread 700g","quantity":1,"unit":"loaf","estimatedCost_ZAR":21.99},
-        {"product":"Penne Pasta 500g","quantity":1,"unit":"pack","estimatedCost_ZAR":24.99},
-        {"product":"Sweet Potatoes 1kg","quantity":1,"unit":"bag","estimatedCost_ZAR":24.99},
-        {"product":"Butternut 1kg (pre-cut)","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},
-        {"product":"Broccoli Florets 350g","quantity":2,"unit":"pack","estimatedCost_ZAR":59.98},
-        {"product":"Brown Mushrooms 250g","quantity":1,"unit":"punnet","estimatedCost_ZAR":24.99},
-        {"product":"Bananas 1kg","quantity":2,"unit":"bunch","estimatedCost_ZAR":29.98},
-        {"product":"Smooth Cottage Cheese 250g","quantity":4,"unit":"tub","estimatedCost_ZAR":103.96},
-        {"product":"Fat Free Plain Yoghurt 500g","quantity":1,"unit":"tub","estimatedCost_ZAR":32.99},
-        {"product":"Low Fat Milk 1L","quantity":1,"unit":"bottle","estimatedCost_ZAR":21.99},
-        {"product":"Sliced Biltong 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":59.99},
-        {"product":"Napolitana Pasta Sauce 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":34.99},
-        {"product":"Chicken & Veg Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},
-        {"product":"Chicken & Rice Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},
-        {"product":"Rice Cakes 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":19.99}
-      ],
-      "estimatedTotal_ZAR": 1270.68
-    }
-  },
-  "weeklyAverages": {
-    "week1": {"avgCalories":2348,"avgProtein_g":200,"avgCarbs_g":237,"avgFat_g":62},
-    "week2": {"avgCalories":2321,"avgProtein_g":202,"avgCarbs_g":226,"avgFat_g":63}
-  }
-};
+const PLAN_DATA = {"planId":"plan-001","startDate":"2026-02-23","endDate":"2026-03-08","dailyTargets":{"calories":2300,"protein_g":200,"carbs_g":218,"fat_g":70,"tolerancePercent":"5-10%"},"supplements":["Whey Protein Isolate","Creatine Monohydrate 5g daily (add to post-workout shake or water)"],"notes":"All products sourced from Woolworths South Africa. No broccoli, mushrooms, cilantro, or raw vegetables. Batch prep on Feb 22 (Sunday) before plan starts. Two shopping trips: Feb 22 and Mar 1. Prep days are Feb 22 (pre-plan) and Day 7 (Sunday Mar 1).","days":[{"day":0,"dayOfWeek":"Sunday","date":"2026-02-22","prepDay":true,"batchPrepInstructions":"Batch cook: 1.8kg chicken breast (season with paprika, garlic, salt — grill or bake at 200C, 25 min). Cook 800g dry rice. Boil 18 eggs. Brown 800g lean mince with onion and garlic. Roast 600g butternut cubes. Bake 4 sweet potatoes (200C, 45 min). Store everything in portioned containers for the week.","meals":[],"dailyTotals":{"calories":0,"protein_g":0,"carbs_g":0,"fat_g":0}},{"day":1,"dayOfWeek":"Monday","date":"2026-02-23","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Oats with Whey, Peanut Butter & Banana","ingredients":[{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}],"macros":{"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13},"prep":"Cook oats with water in microwave 3 min. Stir in whey protein. Top with sliced banana and peanut butter.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Lean Beef Mince Bolognese with Pasta","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne or fusilli"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}],"macros":{"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20},"prep":"Reheat batch-cooked mince with pasta sauce. Cook pasta fresh or reheat. Combine.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Chicken Breast with Rice & Mixed Veg","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":170,"notes":"from batch cook"},{"item":"Frozen Mixed Vegetables (steamed)","quantity_g":80,"notes":"microwave steamed 3 min"}],"macros":{"calories":479,"protein_g":44,"carbs_g":57,"fat_g":5},"prep":"Reheat chicken and rice. Microwave steam mixed veg for 3 min.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended into shake"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Fat Free Yoghurt with Whey & Nuts","ingredients":[{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}],"macros":{"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12},"prep":"Mix whey into yoghurt. Top with nuts.","batchPrep":false}],"dailyTotals":{"calories":2412,"protein_g":213,"carbs_g":265,"fat_g":57}},{"day":2,"dayOfWeek":"Tuesday","date":"2026-02-24","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Egg White Omelette with Toast","ingredients":[{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20},"prep":"Whisk egg whites and whole eggs. Cook in non-stick pan with spray oil. Add cheese before folding. Serve with toast.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Chicken & Rice with Creamy Spinach","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Frozen Spinach (cooked)","quantity_g":100,"notes":"thawed, squeezed dry"},{"item":"Low Fat Milk","quantity_g":50,"notes":"for sauce"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":542,"protein_g":51,"carbs_g":58,"fat_g":8},"prep":"Cook frozen spinach in microwave. Squeeze out excess water. Heat in pan with spray oil, add milk splash, season with garlic salt. Serve over reheated chicken and rice.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Lean Mince with Sweet Potato","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Sweet Potato (baked)","quantity_g":250,"notes":"from batch bake"}],"macros":{"calories":521,"protein_g":40,"carbs_g":50,"fat_g":16},"prep":"Reheat batch-baked sweet potato and mince in microwave.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Chicken Breast with Rice","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}],"macros":{"calories":486,"protein_g":44,"carbs_g":62,"fat_g":5},"prep":"Reheat chicken and rice. Drizzle with soy sauce.","batchPrep":true},{"slot":"pre-bed","time":"23:00","name":"Cottage Cheese with Mixed Nuts","ingredients":[{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}],"macros":{"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21},"prep":"Serve cottage cheese in bowl, top with nuts.","batchPrep":false}],"dailyTotals":{"calories":2362,"protein_g":203,"carbs_g":209,"fat_g":70}},{"day":3,"dayOfWeek":"Wednesday","date":"2026-02-25","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Futurelife Cereal with Milk & Boiled Eggs","ingredients":[{"item":"Futurelife Smart Food","quantity_g":50,"notes":"1 serving"},{"item":"Low Fat Milk","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs (boiled)","quantity_g":150,"notes":"3 eggs, from batch"}],"macros":{"calories":515,"protein_g":36,"carbs_g":42,"fat_g":22},"prep":"Pour cereal into bowl, add milk. Peel 3 batch-boiled eggs and eat on the side.","batchPrep":true},{"slot":"lunch","time":"12:30","name":"Hake Fillet with Sweet Potato & Spinach","ingredients":[{"item":"Hake Fillets","quantity_g":250,"notes":"2 fillets"},{"item":"Sweet Potato (baked)","quantity_g":200,"notes":"from batch bake"},{"item":"Frozen Spinach (steamed)","quantity_g":100,"notes":"microwave steamed 3 min"},{"item":"Lemon Juice","quantity_g":10,"notes":"squeeze over fish"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}],"macros":{"calories":496,"protein_g":53,"carbs_g":52,"fat_g":4},"prep":"Bake hake fillets at 200C for 15 min the evening before. Store in container with sweet potato and spinach. Reheat in microwave at office.","batchPrep":false},{"slot":"pre-workout","time":"17:00","name":"Whey Shake with Banana, Oats & Rice Cakes","ingredients":[{"item":"Whey Protein","quantity_g":60,"notes":"2 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":50,"notes":"raw, blended"},{"item":"Rice Cakes","quantity_g":18,"notes":"2 cakes"},{"item":"Water","quantity_g":400,"notes":"for shake"}],"macros":{"calories":517,"protein_g":52,"carbs_g":69,"fat_g":6},"prep":"Blend whey, oats, banana, and water. Eat rice cakes on the side.","batchPrep":false},{"slot":"post-workout","time":"20:30","name":"Lean Mince Pasta with Tomato Sauce","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":160,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}],"macros":{"calories":504,"protein_g":38,"carbs_g":50,"fat_g":16},"prep":"Cook pasta. Reheat mince with sauce. Combine.","batchPrep":true},{"slot":"pre-bed","time":"23:00","name":"Scrambled Eggs with Cheese","ingredients":[{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27},"prep":"Scramble 3 eggs in non-stick pan. Add cheese slice on top to melt.","batchPrep":false}],"dailyTotals":{"calories":2376,"protein_g":204,"carbs_g":215,"fat_g":75}},{"day":4,"dayOfWeek":"Thursday","date":"2026-02-26","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Cottage Cheese Oats with Nuts","ingredients":[{"item":"Woolworths Cottage Cheese","quantity_g":150,"notes":"smooth"},{"item":"Oats","quantity_g":70,"notes":"raw, cooked with water"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted, chopped"},{"item":"Honey","quantity_g":10,"notes":"drizzle"},{"item":"Water","quantity_g":200,"notes":"for oats"}],"macros":{"calories":502,"protein_g":29,"carbs_g":59,"fat_g":18},"prep":"Cook oats with water. Stir in cottage cheese. Top with nuts and honey drizzle.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Grilled Chicken Breast with Rice & Roasted Butternut","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}],"macros":{"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5},"prep":"Reheat batch-cooked chicken, rice, and butternut.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Basa Fillet with Rice","ingredients":[{"item":"Basa Fillets","quantity_g":220,"notes":"2 fillets"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}],"macros":{"calories":442,"protein_g":42,"carbs_g":51,"fat_g":5},"prep":"Bake basa fillets at 200C for 12 min the evening before. Store in container with rice. Reheat in microwave at office.","batchPrep":false},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Biltong with Cottage Cheese","ingredients":[{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}],"macros":{"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7},"prep":"Serve biltong with cottage cheese on the side.","batchPrep":false}],"dailyTotals":{"calories":2198,"protein_g":200,"carbs_g":247,"fat_g":42}},{"day":5,"dayOfWeek":"Friday","date":"2026-02-27","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Scrambled Eggs with Toast & Banana","ingredients":[{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22},"prep":"Scramble 4 eggs. Toast bread. Banana on the side.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Lean Beef Mince Bolognese with Pasta","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}],"macros":{"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20},"prep":"Reheat mince with sauce. Cook or reheat pasta. Combine.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Chicken Breast with Rice & Mixed Veg","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Frozen Mixed Vegetables (steamed)","quantity_g":100,"notes":"microwave steamed 3 min"}],"macros":{"calories":464,"protein_g":44,"carbs_g":54,"fat_g":5},"prep":"Reheat chicken and rice. Microwave steam mixed veg for 3 min.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Chicken Breast with Rice","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}],"macros":{"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5},"prep":"Reheat chicken and rice. Season with soy sauce.","batchPrep":true},{"slot":"pre-bed","time":"23:00","name":"Fat Free Yoghurt with Whey & Nuts","ingredients":[{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}],"macros":{"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12},"prep":"Mix whey into yoghurt. Top with nuts.","batchPrep":false}],"dailyTotals":{"calories":2384,"protein_g":205,"carbs_g":229,"fat_g":64}},{"day":6,"dayOfWeek":"Saturday","date":"2026-02-28","prepDay":false,"meals":[{"slot":"breakfast","time":"08:30","name":"Oats with Whey, Peanut Butter & Banana","ingredients":[{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}],"macros":{"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13},"prep":"Cook oats with water. Stir in whey. Top with banana and peanut butter.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Woolworths Chicken Ready Meal with Extra Protein","ingredients":[{"item":"Woolworths Chicken & Veg Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Free Range Large Eggs (boiled)","quantity_g":100,"notes":"2 eggs, from batch"}],"macros":{"calories":516,"protein_g":40,"carbs_g":45,"fat_g":18},"prep":"Microwave ready meal per instructions. Eat 2 boiled eggs on the side.","batchPrep":false},{"slot":"pre-workout","time":"17:00","name":"Lean Mince with Sweet Potato","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook (last portions)"},{"item":"Sweet Potato (baked)","quantity_g":220,"notes":"microwave baked"}],"macros":{"calories":495,"protein_g":40,"carbs_g":44,"fat_g":16},"prep":"Microwave sweet potato. Reheat last of batch-cooked mince.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Scrambled Eggs with Cheese","ingredients":[{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27},"prep":"Scramble 3 eggs. Top with cheese slice to melt.","batchPrep":false}],"dailyTotals":{"calories":2339,"protein_g":185,"carbs_g":228,"fat_g":81}},{"day":7,"dayOfWeek":"Sunday","date":"2026-03-01","prepDay":true,"batchPrepInstructions":"Week 2 batch cook: 1.8kg chicken breast (season with lemon pepper, garlic, salt — grill or bake at 200C, 25 min). Cook 800g dry rice. Boil 18 eggs. Brown 800g lean mince with onion and garlic. Roast 600g butternut cubes. Bake 4 sweet potatoes (200C, 45 min). Store everything in portioned containers for the week.","meals":[{"slot":"breakfast","time":"08:30","name":"Egg White Omelette with Toast","ingredients":[{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20},"prep":"Whisk egg whites and whole eggs. Cook omelette, add cheese. Serve with toast.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Grilled Chicken Breast with Rice & Roasted Butternut","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}],"macros":{"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5},"prep":"Reheat batch-cooked chicken, rice, and butternut.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Chicken Breast with Rice & Mixed Veg","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Frozen Mixed Vegetables (steamed)","quantity_g":100,"notes":"microwave steamed 3 min"}],"macros":{"calories":503,"protein_g":44,"carbs_g":63,"fat_g":5},"prep":"Reheat chicken and rice. Microwave steam mixed veg for 3 min.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Cottage Cheese with Mixed Nuts","ingredients":[{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":30,"notes":"unsalted"}],"macros":{"calories":372,"protein_g":28,"carbs_g":11,"fat_g":24},"prep":"Serve cottage cheese in bowl, top with nuts.","batchPrep":false}],"dailyTotals":{"calories":2358,"protein_g":205,"carbs_g":235,"fat_g":61}},{"day":8,"dayOfWeek":"Monday","date":"2026-03-02","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Oats with Whey, Peanut Butter & Banana","ingredients":[{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}],"macros":{"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13},"prep":"Cook oats with water in microwave. Stir in whey. Top with banana and peanut butter.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Chicken & Rice with Creamy Spinach","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Frozen Spinach (cooked)","quantity_g":100,"notes":"thawed, squeezed dry"},{"item":"Low Fat Milk","quantity_g":50,"notes":"for sauce"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":542,"protein_g":51,"carbs_g":58,"fat_g":8},"prep":"Cook frozen spinach in microwave. Squeeze out excess water. Heat in pan with spray oil, add milk splash, season with garlic salt. Serve over reheated chicken and rice.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Lean Mince with Sweet Potato","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Sweet Potato (baked)","quantity_g":250,"notes":"from batch bake"}],"macros":{"calories":521,"protein_g":40,"carbs_g":50,"fat_g":16},"prep":"Reheat batch-baked sweet potato and mince in microwave.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Chicken Breast with Rice","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}],"macros":{"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5},"prep":"Reheat chicken and rice. Season with soy sauce.","batchPrep":true},{"slot":"pre-bed","time":"23:00","name":"Biltong with Cottage Cheese","ingredients":[{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}],"macros":{"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7},"prep":"Serve biltong with cottage cheese.","batchPrep":false}],"dailyTotals":{"calories":2282,"protein_g":211,"carbs_g":236,"fat_g":49}},{"day":9,"dayOfWeek":"Tuesday","date":"2026-03-03","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Futurelife Cereal with Milk & Boiled Eggs","ingredients":[{"item":"Futurelife Smart Food","quantity_g":50,"notes":"1 serving"},{"item":"Low Fat Milk","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs (boiled)","quantity_g":150,"notes":"3 eggs, from batch"}],"macros":{"calories":515,"protein_g":36,"carbs_g":42,"fat_g":22},"prep":"Pour cereal, add milk. Eat 3 batch-boiled eggs on the side.","batchPrep":true},{"slot":"lunch","time":"12:30","name":"Hake Fillet with Sweet Potato & Spinach","ingredients":[{"item":"Hake Fillets","quantity_g":250,"notes":"2 fillets"},{"item":"Sweet Potato (baked)","quantity_g":200,"notes":"from batch bake"},{"item":"Frozen Spinach (steamed)","quantity_g":100,"notes":"microwave steamed 3 min"},{"item":"Lemon Juice","quantity_g":10,"notes":"squeeze over fish"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}],"macros":{"calories":496,"protein_g":53,"carbs_g":52,"fat_g":4},"prep":"Bake hake fillets at 200C for 15 min the evening before. Store in container with sweet potato and spinach. Reheat in microwave at office.","batchPrep":false},{"slot":"pre-workout","time":"17:00","name":"Chicken Breast with Rice & Mixed Veg","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":170,"notes":"from batch cook"},{"item":"Frozen Mixed Vegetables (steamed)","quantity_g":80,"notes":"microwave steamed 3 min"}],"macros":{"calories":479,"protein_g":44,"carbs_g":57,"fat_g":5},"prep":"Reheat chicken and rice. Microwave steam mixed veg for 3 min.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Lean Mince Pasta with Tomato Sauce","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":160,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}],"macros":{"calories":504,"protein_g":38,"carbs_g":50,"fat_g":16},"prep":"Cook pasta. Reheat mince with sauce. Combine.","batchPrep":true},{"slot":"pre-bed","time":"23:00","name":"Fat Free Yoghurt with Whey & Nuts","ingredients":[{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}],"macros":{"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12},"prep":"Mix whey into yoghurt. Top with nuts.","batchPrep":false}],"dailyTotals":{"calories":2366,"protein_g":212,"carbs_g":224,"fat_g":59}},{"day":10,"dayOfWeek":"Wednesday","date":"2026-03-04","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Scrambled Eggs with Toast & Banana","ingredients":[{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22},"prep":"Scramble 4 eggs. Toast bread. Banana on the side.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Lean Beef Mince Bolognese with Pasta","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}],"macros":{"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20},"prep":"Reheat mince with sauce. Cook or reheat pasta. Combine.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Whey Shake with Banana, Oats & Rice Cakes","ingredients":[{"item":"Whey Protein","quantity_g":60,"notes":"2 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":50,"notes":"raw, blended"},{"item":"Rice Cakes","quantity_g":18,"notes":"2 cakes"},{"item":"Water","quantity_g":400,"notes":"for shake"}],"macros":{"calories":517,"protein_g":52,"carbs_g":69,"fat_g":6},"prep":"Blend whey, oats, banana, and water. Eat rice cakes on the side.","batchPrep":false},{"slot":"post-workout","time":"20:30","name":"Chicken Breast with Rice","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"}],"macros":{"calories":468,"protein_g":44,"carbs_g":55,"fat_g":5},"prep":"Reheat chicken and rice. Drizzle soy sauce.","batchPrep":true},{"slot":"pre-bed","time":"23:00","name":"Cottage Cheese with Mixed Nuts","ingredients":[{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}],"macros":{"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21},"prep":"Serve cottage cheese topped with nuts.","batchPrep":false}],"dailyTotals":{"calories":2408,"protein_g":198,"carbs_g":232,"fat_g":74}},{"day":11,"dayOfWeek":"Thursday","date":"2026-03-05","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Cottage Cheese Oats with Nuts","ingredients":[{"item":"Woolworths Cottage Cheese","quantity_g":150,"notes":"smooth"},{"item":"Oats","quantity_g":70,"notes":"raw, cooked with water"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted, chopped"},{"item":"Honey","quantity_g":10,"notes":"drizzle"},{"item":"Water","quantity_g":200,"notes":"for oats"}],"macros":{"calories":502,"protein_g":29,"carbs_g":59,"fat_g":18},"prep":"Cook oats with water. Stir in cottage cheese. Top with nuts and honey.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Grilled Chicken Breast with Rice & Roasted Butternut","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}],"macros":{"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5},"prep":"Reheat batch-cooked chicken, rice, and butternut.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Basa Fillet with Rice","ingredients":[{"item":"Basa Fillets","quantity_g":220,"notes":"2 fillets"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Soy Sauce","quantity_g":10,"notes":"for flavour"},{"item":"Spray & Cook","quantity_g":2,"notes":"for pan"}],"macros":{"calories":442,"protein_g":42,"carbs_g":51,"fat_g":5},"prep":"Bake basa fillets at 200C for 12 min the evening before. Store in container with rice. Reheat in microwave at office.","batchPrep":false},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Scrambled Eggs with Cheese","ingredients":[{"item":"Free Range Large Eggs","quantity_g":150,"notes":"3 eggs"},{"item":"Cheddar Cheese","quantity_g":30,"notes":"1 slice"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":344,"protein_g":25,"carbs_g":2,"fat_g":27},"prep":"Scramble 3 eggs. Top with cheese slice to melt.","batchPrep":false}],"dailyTotals":{"calories":2301,"protein_g":187,"carbs_g":245,"fat_g":62}},{"day":12,"dayOfWeek":"Friday","date":"2026-03-06","prepDay":false,"meals":[{"slot":"breakfast","time":"07:00","name":"Egg White Omelette with Toast","ingredients":[{"item":"Liquid Egg Whites","quantity_g":200,"notes":"200ml"},{"item":"Free Range Large Eggs","quantity_g":100,"notes":"2 whole eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Cheddar Cheese","quantity_g":20,"notes":"grated, in omelette"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":470,"protein_g":42,"carbs_g":28,"fat_g":20},"prep":"Whisk egg whites and whole eggs. Cook omelette, add cheese. Serve with toast.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Lean Beef Mince Bolognese with Pasta","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":200,"notes":"from batch cook"},{"item":"Pasta (cooked)","quantity_g":150,"notes":"penne"},{"item":"Tomato Pasta Sauce","quantity_g":80,"notes":"Woolworths napolitana"}],"macros":{"calories":577,"protein_g":48,"carbs_g":48,"fat_g":20},"prep":"Reheat mince with sauce. Cook or reheat pasta. Combine.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Chicken Breast with Rice & Mixed Veg","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":150,"notes":"from batch cook"},{"item":"Frozen Mixed Vegetables (steamed)","quantity_g":100,"notes":"microwave steamed 3 min"}],"macros":{"calories":464,"protein_g":44,"carbs_g":54,"fat_g":5},"prep":"Reheat chicken and rice. Microwave steam mixed veg for 3 min.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Woolworths Chicken Ready Meal with Whey Shake","ingredients":[{"item":"Woolworths Chicken & Rice Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop in water"},{"item":"Water","quantity_g":300,"notes":"for shake"}],"macros":{"calories":480,"protein_g":42,"carbs_g":48,"fat_g":12},"prep":"Microwave ready meal. Mix whey shake on the side. Add creatine to shake.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Cottage Cheese with Mixed Nuts","ingredients":[{"item":"Woolworths Cottage Cheese","quantity_g":200,"notes":"smooth or chunky"},{"item":"Mixed Nuts","quantity_g":25,"notes":"unsalted"}],"macros":{"calories":343,"protein_g":26,"carbs_g":11,"fat_g":21},"prep":"Serve cottage cheese topped with nuts.","batchPrep":false}],"dailyTotals":{"calories":2334,"protein_g":202,"carbs_g":189,"fat_g":78}},{"day":13,"dayOfWeek":"Saturday","date":"2026-03-07","prepDay":false,"meals":[{"slot":"breakfast","time":"08:30","name":"Oats with Whey, Peanut Butter & Banana","ingredients":[{"item":"Oats","quantity_g":80,"notes":"raw"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Peanut Butter","quantity_g":15,"notes":"smooth"},{"item":"Banana","quantity_g":100,"notes":"1 small, sliced"},{"item":"Water","quantity_g":250,"notes":"to cook oats"}],"macros":{"calories":510,"protein_g":38,"carbs_g":69,"fat_g":13},"prep":"Cook oats with water. Stir in whey. Top with banana and peanut butter.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Woolworths Chicken Ready Meal with Extra Protein","ingredients":[{"item":"Woolworths Chicken & Veg Ready Meal","quantity_g":350,"notes":"1 tray"},{"item":"Free Range Large Eggs (boiled)","quantity_g":100,"notes":"2 eggs, from batch"}],"macros":{"calories":516,"protein_g":40,"carbs_g":45,"fat_g":18},"prep":"Microwave ready meal. Eat 2 boiled eggs on the side.","batchPrep":false},{"slot":"pre-workout","time":"17:00","name":"Lean Mince with Sweet Potato","ingredients":[{"item":"Lean Beef Mince (cooked)","quantity_g":180,"notes":"from batch cook (last portions)"},{"item":"Sweet Potato (baked)","quantity_g":220,"notes":"microwave baked"}],"macros":{"calories":495,"protein_g":40,"carbs_g":44,"fat_g":16},"prep":"Microwave sweet potato. Reheat last of batch-cooked mince.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Biltong with Cottage Cheese","ingredients":[{"item":"Woolworths Biltong","quantity_g":50,"notes":"sliced"},{"item":"Woolworths Cottage Cheese","quantity_g":100,"notes":"smooth"}],"macros":{"calories":241,"protein_g":38,"carbs_g":4,"fat_g":7},"prep":"Serve biltong with cottage cheese.","batchPrep":false}],"dailyTotals":{"calories":2236,"protein_g":198,"carbs_g":230,"fat_g":61}},{"day":14,"dayOfWeek":"Sunday","date":"2026-03-08","prepDay":false,"meals":[{"slot":"breakfast","time":"08:30","name":"Scrambled Eggs with Toast & Banana","ingredients":[{"item":"Free Range Large Eggs","quantity_g":200,"notes":"4 eggs"},{"item":"Wholewheat Bread","quantity_g":60,"notes":"2 slices"},{"item":"Banana","quantity_g":100,"notes":"1 small"},{"item":"Spray & Cook","quantity_g":2,"notes":"light spray"}],"macros":{"calories":503,"protein_g":28,"carbs_g":49,"fat_g":22},"prep":"Scramble 4 eggs. Toast bread. Banana on the side.","batchPrep":false},{"slot":"lunch","time":"12:30","name":"Grilled Chicken Breast with Rice & Roasted Butternut","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":200,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Butternut (roasted)","quantity_g":120,"notes":"from batch cook"}],"macros":{"calories":539,"protein_g":49,"carbs_g":65,"fat_g":5},"prep":"Reheat batch-cooked chicken, rice, and butternut.","batchPrep":true},{"slot":"pre-workout","time":"17:00","name":"Chicken Breast with Rice & Mixed Veg","ingredients":[{"item":"Skinless Chicken Breast","quantity_g":180,"notes":"from batch cook"},{"item":"White Rice (cooked)","quantity_g":180,"notes":"from batch cook"},{"item":"Frozen Mixed Vegetables (steamed)","quantity_g":100,"notes":"microwave steamed 3 min"}],"macros":{"calories":503,"protein_g":44,"carbs_g":63,"fat_g":5},"prep":"Reheat chicken and rice. Microwave steam mixed veg for 3 min.","batchPrep":true},{"slot":"post-workout","time":"20:30","name":"Whey Shake with Banana & Oats","ingredients":[{"item":"Whey Protein","quantity_g":45,"notes":"1.5 scoops"},{"item":"Banana","quantity_g":120,"notes":"1 medium"},{"item":"Oats","quantity_g":60,"notes":"raw, blended"},{"item":"Water","quantity_g":350,"notes":"for shake"}],"macros":{"calories":474,"protein_g":42,"carbs_g":68,"fat_g":7},"prep":"Blend whey, oats, banana, and water. Add creatine 5g.","batchPrep":false},{"slot":"pre-bed","time":"23:00","name":"Fat Free Yoghurt with Whey & Nuts","ingredients":[{"item":"Fat Free Yoghurt","quantity_g":250,"notes":"Woolworths plain"},{"item":"Whey Protein","quantity_g":30,"notes":"1 scoop"},{"item":"Mixed Nuts","quantity_g":20,"notes":"unsalted"}],"macros":{"calories":372,"protein_g":41,"carbs_g":23,"fat_g":12},"prep":"Mix whey into yoghurt. Top with nuts.","batchPrep":false}],"dailyTotals":{"calories":2391,"protein_g":204,"carbs_g":268,"fat_g":51}}],"shoppingLists":{"week1":{"tripDate":"2026-02-22","items":[{"product":"Woolworths Skinless Chicken Breast Fillets 900g","quantity":2,"unit":"pack","estimatedCost_ZAR":259.98},{"product":"Woolworths Lean Beef Mince 500g","quantity":2,"unit":"pack","estimatedCost_ZAR":119.98},{"product":"Woolworths Free Range Large Eggs 18s","quantity":2,"unit":"tray","estimatedCost_ZAR":119.98},{"product":"Woolworths Liquid Egg Whites 500ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},{"product":"Woolworths Hake Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":64.99},{"product":"Woolworths Basa Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":54.99},{"product":"Woolworths Wholewheat Bread 700g","quantity":1,"unit":"loaf","estimatedCost_ZAR":21.99},{"product":"Woolworths White Rice 2kg","quantity":1,"unit":"bag","estimatedCost_ZAR":39.99},{"product":"Woolworths Penne Pasta 500g","quantity":1,"unit":"pack","estimatedCost_ZAR":24.99},{"product":"Woolworths Jungle Oats 1kg","quantity":1,"unit":"box","estimatedCost_ZAR":34.99},{"product":"Woolworths Sweet Potatoes 1kg","quantity":1,"unit":"bag","estimatedCost_ZAR":24.99},{"product":"Woolworths Butternut 1kg (pre-cut)","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},{"product":"Woolworths Frozen Mixed Vegetables 1kg","quantity":1,"unit":"pack","estimatedCost_ZAR":44.99},{"product":"Woolworths Frozen Chopped Spinach 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},{"product":"Woolworths Bananas 1kg (approx 7)","quantity":2,"unit":"bunch","estimatedCost_ZAR":29.98},{"product":"Woolworths Smooth Cottage Cheese 250g","quantity":4,"unit":"tub","estimatedCost_ZAR":103.96},{"product":"Woolworths Fat Free Plain Yoghurt 500g","quantity":1,"unit":"tub","estimatedCost_ZAR":32.99},{"product":"Woolworths Cheddar Cheese 200g","quantity":1,"unit":"block","estimatedCost_ZAR":42.99},{"product":"Woolworths Low Fat Milk 1L","quantity":1,"unit":"bottle","estimatedCost_ZAR":21.99},{"product":"Woolworths Peanut Butter Smooth 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":39.99},{"product":"Woolworths Mixed Nuts Unsalted 200g","quantity":1,"unit":"bag","estimatedCost_ZAR":59.99},{"product":"Woolworths Biltong Sliced 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":59.99},{"product":"Woolworths Napolitana Pasta Sauce 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":34.99},{"product":"Woolworths Soy Sauce 250ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":24.99},{"product":"Futurelife Smart Food Original 500g","quantity":1,"unit":"box","estimatedCost_ZAR":54.99},{"product":"Woolworths Spray & Cook 300ml","quantity":1,"unit":"can","estimatedCost_ZAR":39.99},{"product":"Woolworths Chicken & Veg Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},{"product":"Woolworths Honey 375g","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},{"product":"Woolworths Lemon Juice 250ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":19.99},{"product":"Woolworths Rice Cakes Plain 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":19.99}],"estimatedTotal_ZAR":1534.6},"week2":{"tripDate":"2026-03-01","items":[{"product":"Woolworths Skinless Chicken Breast Fillets 900g","quantity":2,"unit":"pack","estimatedCost_ZAR":259.98},{"product":"Woolworths Lean Beef Mince 500g","quantity":2,"unit":"pack","estimatedCost_ZAR":119.98},{"product":"Woolworths Free Range Large Eggs 18s","quantity":2,"unit":"tray","estimatedCost_ZAR":119.98},{"product":"Woolworths Liquid Egg Whites 500ml","quantity":1,"unit":"bottle","estimatedCost_ZAR":49.99},{"product":"Woolworths Hake Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":64.99},{"product":"Woolworths Basa Fillets 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":54.99},{"product":"Woolworths Wholewheat Bread 700g","quantity":1,"unit":"loaf","estimatedCost_ZAR":21.99},{"product":"Woolworths Penne Pasta 500g","quantity":1,"unit":"pack","estimatedCost_ZAR":24.99},{"product":"Woolworths Sweet Potatoes 1kg","quantity":1,"unit":"bag","estimatedCost_ZAR":24.99},{"product":"Woolworths Butternut 1kg (pre-cut)","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},{"product":"Woolworths Frozen Mixed Vegetables 1kg","quantity":1,"unit":"pack","estimatedCost_ZAR":44.99},{"product":"Woolworths Frozen Chopped Spinach 400g","quantity":1,"unit":"pack","estimatedCost_ZAR":29.99},{"product":"Woolworths Bananas 1kg (approx 7)","quantity":2,"unit":"bunch","estimatedCost_ZAR":29.98},{"product":"Woolworths Smooth Cottage Cheese 250g","quantity":4,"unit":"tub","estimatedCost_ZAR":103.96},{"product":"Woolworths Fat Free Plain Yoghurt 500g","quantity":1,"unit":"tub","estimatedCost_ZAR":32.99},{"product":"Woolworths Low Fat Milk 1L","quantity":1,"unit":"bottle","estimatedCost_ZAR":21.99},{"product":"Woolworths Biltong Sliced 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":59.99},{"product":"Woolworths Napolitana Pasta Sauce 400g","quantity":1,"unit":"jar","estimatedCost_ZAR":34.99},{"product":"Woolworths Chicken & Veg Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},{"product":"Woolworths Chicken & Rice Ready Meal 350g","quantity":1,"unit":"tray","estimatedCost_ZAR":54.99},{"product":"Woolworths Rice Cakes Plain 100g","quantity":1,"unit":"pack","estimatedCost_ZAR":19.99}],"estimatedTotal_ZAR":1260.69}},"weeklyAverages":{"week1":{"avgCalories":2347,"avgProtein_g":202,"avgCarbs_g":233,"avgFat_g":64},"week2":{"avgCalories":2331,"avgProtein_g":202,"avgCarbs_g":232,"avgFat_g":62}}};
 
 // ==================== STATE ====================
 let currentTab = 'dashboard';
-let selectedDay = 0;
+let selectedDay = 1;
 let selectedWeek = 'week1';
 const T = PLAN_DATA.dailyTargets;
 
@@ -1242,12 +1130,12 @@ function renderTab(tab) {
 // ==================== DASHBOARD ====================
 function renderDashboard() {
   const el = $('#tab-dashboard');
-  const days = PLAN_DATA.days;
+  const activeDays = PLAN_DATA.days.filter(d => d.day > 0);
   const w1Total = PLAN_DATA.shoppingLists.week1.estimatedTotal_ZAR;
   const w2Total = PLAN_DATA.shoppingLists.week2.estimatedTotal_ZAR;
 
   let tableRows = '';
-  days.forEach(d => {
+  activeDays.forEach(d => {
     const dt = d.dailyTotals;
     tableRows += `<tr>
       <td><strong>D${d.day}</strong></td>
@@ -1258,6 +1146,13 @@ function renderDashboard() {
       <td><span class="${colorClass(dt.fat_g, T.fat_g)}">${dt.fat_g}g</span></td>
       <td>${d.prepDay ? '<span class="batch-badge">Prep</span>' : ''}</td>
     </tr>`;
+  });
+
+  const ts = getTrackingSummary();
+  const pct = ts.totalMeals > 0 ? Math.round((ts.completed / ts.totalMeals) * 100) : 0;
+  let notesList = '';
+  ts.notesEntries.slice(0, 5).forEach(n => {
+    notesList += `<li><span class="note-meal">D${n.day} ${slotLabel(n.slot)}:</span> ${n.note}</li>`;
   });
 
   el.innerHTML = `
@@ -1277,6 +1172,34 @@ function renderDashboard() {
       <div class="target-card">
         <div class="target-value" style="color:var(--fat)">${T.fat_g}<span class="target-unit">g</span></div>
         <div class="target-label">Fat</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Meal Tracking</div>
+      <div class="tracking-progress"><div class="tracking-progress-fill" style="width:${pct}%"></div></div>
+      <div class="tracking-summary-grid">
+        <div class="tracking-stat">
+          <div class="tracking-stat-value" style="color:var(--protein)">${ts.completed}</div>
+          <div class="tracking-stat-label">Completed</div>
+        </div>
+        <div class="tracking-stat">
+          <div class="tracking-stat-value" style="color:var(--carbs)">${ts.skipped}</div>
+          <div class="tracking-stat-label">Skipped</div>
+        </div>
+        <div class="tracking-stat">
+          <div class="tracking-stat-value" style="color:var(--protein)">${ts.thumbsUp}</div>
+          <div class="tracking-stat-label">Liked</div>
+        </div>
+        <div class="tracking-stat">
+          <div class="tracking-stat-value" style="color:var(--calories)">${ts.thumbsDown}</div>
+          <div class="tracking-stat-label">Disliked</div>
+        </div>
+      </div>
+      ${notesList ? '<ul class="tracking-notes-list">' + notesList + '</ul>' : '<div style="font-size:13px;color:var(--text-muted);text-align:center;padding:12px 0;">No tracking data yet. Go to Meal Plan to start tracking.</div>'}
+      <div style="margin-top:12px;">
+        <button class="export-btn" onclick="exportTracking()">Export Tracking Data</button>
+        <span class="export-msg" id="exportMsg">Copied to clipboard!</span>
       </div>
     </div>
 
@@ -1306,7 +1229,7 @@ function renderDashboard() {
       <div class="timing-grid">
         <div class="timing-slot">
           <div class="timing-slot-name">Breakfast</div>
-          <div class="timing-slot-time">07:00 - 08:30</div>
+          <div class="timing-slot-time">07:00 / 08:30</div>
         </div>
         <div class="timing-slot">
           <div class="timing-slot-name">Lunch</div>
@@ -1314,15 +1237,15 @@ function renderDashboard() {
         </div>
         <div class="timing-slot">
           <div class="timing-slot-name">Pre-Workout</div>
-          <div class="timing-slot-time">15:30</div>
+          <div class="timing-slot-time">17:00</div>
         </div>
         <div class="timing-slot">
           <div class="timing-slot-name">Post-Workout</div>
-          <div class="timing-slot-time">18:30</div>
+          <div class="timing-slot-time">20:30</div>
         </div>
         <div class="timing-slot">
           <div class="timing-slot-name">Pre-Bed</div>
-          <div class="timing-slot-time">21:00</div>
+          <div class="timing-slot-time">23:00</div>
         </div>
       </div>
     </div>
@@ -1338,7 +1261,7 @@ function renderMealPlan() {
   let dayBtns = '';
   days.forEach((d, i) => {
     dayBtns += `<button class="day-btn ${i === selectedDay ? 'active' : ''}" data-idx="${i}">
-      <span class="day-num">D${d.day}</span>
+      <span class="day-num">${d.day === 0 ? 'Prep' : 'D' + d.day}</span>
       <span class="day-label">${d.dayOfWeek.slice(0,3)}</span>
     </button>`;
   });
@@ -1356,9 +1279,14 @@ function renderMealPlan() {
   }
 
   let mealCards = '';
+  if (day.meals.length === 0) {
+    mealCards = '<div class="prep-only-msg">Batch Prep Day Only \u2014 No meals planned.<br>Use this day to prep food for the week ahead.</div>';
+  }
+
   day.meals.forEach((m, mi) => {
     const ingId = `ing-${selectedDay}-${mi}`;
     const prepId = `prep-${selectedDay}-${mi}`;
+    const tr = getMealTracking(day.day, m.slot);
 
     let ingList = '';
     m.ingredients.forEach(ing => {
@@ -1366,7 +1294,7 @@ function renderMealPlan() {
     });
 
     mealCards += `
-      <div class="meal-card">
+      <div class="meal-card ${tr.completed ? 'tracked' : ''} ${tr.skipped ? 'skipped' : ''}">
         <div class="meal-card-header">
           <div>
             <div class="meal-slot-time">${slotLabel(m.slot)} \u2014 ${m.time}</div>
@@ -1394,14 +1322,12 @@ function renderMealPlan() {
             <div class="prep-text">${m.prep}</div>
           </div>
         </div>
+        ${buildTrackingStrip(day.day, m.slot)}
       </div>`;
   });
 
   const dt = day.dailyTotals;
-  el.innerHTML = `
-    <div class="day-selector">${dayBtns}</div>
-    ${prepBanner}
-    ${mealCards}
+  const totalsBar = day.meals.length > 0 ? `
     <div class="day-totals-bar">
       <span class="day-totals-label">Day ${day.day} Totals</span>
       <div class="macro-badges">
@@ -1410,7 +1336,13 @@ function renderMealPlan() {
         <span class="macro-badge fat"><span class="macro-badge-label">F</span> ${dt.fat_g}g</span>
         <span class="macro-badge cal"><span class="macro-badge-label">Cal</span> ${dt.calories}</span>
       </div>
-    </div>`;
+    </div>` : '';
+
+  el.innerHTML = `
+    <div class="day-selector">${dayBtns}</div>
+    ${prepBanner}
+    ${mealCards}
+    ${totalsBar}`;
 
   // Bind day selector
   el.querySelectorAll('.day-btn').forEach(btn => {
@@ -1506,7 +1438,7 @@ function renderShopping() {
 // ==================== NUTRITION ====================
 function renderNutrition() {
   const el = $('#tab-nutrition');
-  const days = PLAN_DATA.days;
+  const days = PLAN_DATA.days.filter(d => d.day > 0);
   const wa = PLAN_DATA.weeklyAverages;
 
   // Overall averages for donut
@@ -1624,6 +1556,131 @@ function renderNutrition() {
   `;
 }
 
+// ==================== MEAL TRACKING ====================
+function getTrackingKey() { return 'tracking_' + PLAN_DATA.planId; }
+
+function getTracking() {
+  return getLS(getTrackingKey(), { planId: PLAN_DATA.planId, meals: {} });
+}
+
+function getMealTracking(dayNum, slot) {
+  const tracking = getTracking();
+  return tracking.meals[dayNum + '-' + slot] || {
+    completed: false, rating: null, skipped: false, skipReason: '', substitution: '', notes: ''
+  };
+}
+
+function setMealTracking(dayNum, slot, data) {
+  const tracking = getTracking();
+  tracking.meals[dayNum + '-' + slot] = { ...data, timestamp: new Date().toISOString() };
+  tracking.lastUpdated = new Date().toISOString();
+  setLS(getTrackingKey(), tracking);
+}
+
+function handleTrackAction(dayNum, slot, action, value) {
+  const t = getMealTracking(dayNum, slot);
+  switch(action) {
+    case 'done': t.completed = !t.completed; if (t.completed) t.skipped = false; break;
+    case 'up': t.rating = t.rating === 'up' ? null : 'up'; break;
+    case 'down': t.rating = t.rating === 'down' ? null : 'down'; break;
+    case 'skip': t.skipped = !t.skipped; if (t.skipped) t.completed = false; break;
+    case 'notes': t.notes = value; break;
+    case 'skipReason': t.skipReason = value; break;
+    case 'substitution': t.substitution = value; break;
+  }
+  setMealTracking(dayNum, slot, t);
+  if (action !== 'notes' && action !== 'skipReason' && action !== 'substitution') renderMealPlan();
+}
+
+function buildTrackingStrip(dayNum, slot) {
+  const t = getMealTracking(dayNum, slot);
+  const key = dayNum + '-' + slot;
+  const notesOpen = t.notes || t.substitution || t.skipped ? 'open' : '';
+  return `
+    <div class="tracking-strip">
+      <button class="track-btn ${t.completed ? 'active-done' : ''}" onclick="handleTrackAction(${dayNum},'${slot}','done')">
+        ${t.completed ? '\u2705' : '\u2B1C'} Done
+      </button>
+      <button class="track-btn ${t.rating === 'up' ? 'active-up' : ''}" onclick="handleTrackAction(${dayNum},'${slot}','up')">
+        \uD83D\uDC4D
+      </button>
+      <button class="track-btn ${t.rating === 'down' ? 'active-down' : ''}" onclick="handleTrackAction(${dayNum},'${slot}','down')">
+        \uD83D\uDC4E
+      </button>
+      <button class="track-btn ${t.skipped ? 'active-skip' : ''}" onclick="handleTrackAction(${dayNum},'${slot}','skip')">
+        \u23ED Skip
+      </button>
+      <button class="track-btn" onclick="document.getElementById('notes-${key}').classList.toggle('open')">
+        \uD83D\uDCDD
+      </button>
+    </div>
+    <div class="track-notes-area ${notesOpen}" id="notes-${key}">
+      ${t.skipped ? '<input class="track-sub-input" placeholder="Why skipped?" value="' + (t.skipReason||'').replace(/"/g,'&quot;') + '" onchange="handleTrackAction(' + dayNum + ',\'' + slot + '\',\'skipReason\',this.value)">' : ''}
+      <textarea class="track-notes-input" placeholder="Notes (e.g. too bland, loved this...)" onchange="handleTrackAction(${dayNum},'${slot}','notes',this.value)">${t.notes||''}</textarea>
+      <input class="track-sub-input" placeholder="Substitution (what did you eat instead?)" value="${(t.substitution||'').replace(/"/g,'&quot;')}" onchange="handleTrackAction(${dayNum},'${slot}','substitution',this.value)">
+    </div>`;
+}
+
+function getTrackingSummary() {
+  const tracking = getTracking();
+  const totalMeals = PLAN_DATA.days.reduce((sum, d) => sum + d.meals.length, 0);
+  let completed = 0, skipped = 0, thumbsUp = 0, thumbsDown = 0;
+  const notesEntries = [];
+  const likedMeals = [];
+  const dislikedMeals = [];
+
+  PLAN_DATA.days.forEach(d => {
+    d.meals.forEach(m => {
+      const t = tracking.meals[d.day + '-' + m.slot];
+      if (!t) return;
+      if (t.completed) completed++;
+      if (t.skipped) skipped++;
+      if (t.rating === 'up') { thumbsUp++; likedMeals.push(m.name); }
+      if (t.rating === 'down') { thumbsDown++; dislikedMeals.push(m.name); }
+      if (t.notes) notesEntries.push({ day: d.day, slot: m.slot, meal: m.name, note: t.notes });
+      if (t.substitution) notesEntries.push({ day: d.day, slot: m.slot, meal: m.name, note: 'Sub: ' + t.substitution });
+    });
+  });
+  return { totalMeals, completed, skipped, thumbsUp, thumbsDown, notesEntries, likedMeals, dislikedMeals };
+}
+
+function exportTracking() {
+  const tracking = getTracking();
+  const summary = getTrackingSummary();
+  const skippedMeals = [], substitutions = [], allNotes = [];
+
+  PLAN_DATA.days.forEach(d => {
+    d.meals.forEach(m => {
+      const t = tracking.meals[d.day + '-' + m.slot];
+      if (!t) return;
+      if (t.skipped) skippedMeals.push({ day: d.day, slot: m.slot, reason: t.skipReason || '' });
+      if (t.substitution) substitutions.push({ day: d.day, slot: m.slot, original: m.name, substituted: t.substitution });
+      if (t.notes) allNotes.push({ day: d.day, slot: m.slot, meal: m.name, note: t.notes });
+    });
+  });
+
+  const exportData = {
+    planId: PLAN_DATA.planId,
+    exportDate: new Date().toISOString().slice(0,10),
+    summary: { totalMeals: summary.totalMeals, completed: summary.completed, skipped: summary.skipped, notTracked: summary.totalMeals - summary.completed - summary.skipped, thumbsUp: summary.thumbsUp, thumbsDown: summary.thumbsDown },
+    mealsLiked: [...new Set(summary.likedMeals)],
+    mealsDisliked: [...new Set(summary.dislikedMeals)],
+    skippedMeals, substitutions, allNotes
+  };
+
+  const json = JSON.stringify(exportData, null, 2);
+  navigator.clipboard.writeText(json).then(() => {
+    const msg = document.getElementById('exportMsg');
+    if (msg) { msg.classList.add('show'); setTimeout(() => msg.classList.remove('show'), 2000); }
+  }).catch(() => {
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'feedback-' + PLAN_DATA.planId.split('-')[1] + '.json';
+    a.click(); URL.revokeObjectURL(url);
+  });
+}
+
 // ==================== INIT ====================
 function init() {
   initTheme();
@@ -1640,9 +1697,8 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', init);
 
-// Register service worker for offline support
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js');
 }
 </script>
 </body>
