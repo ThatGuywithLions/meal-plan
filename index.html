@@ -3824,7 +3824,10 @@ async function getUser() {
  */
 async function signIn(email) {
   const client = await initSupabase();
-  return client.auth.signInWithOtp({ email });
+  return client.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: 'https://thatguywithlions.github.io/meal-plan/' }
+  });
 }
 
 /**
