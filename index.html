@@ -1006,6 +1006,54 @@ button {
   align-items: center;
   gap: 6px;
 }
+
+.today-day-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 4px;
+  margin-bottom: 10px;
+}
+
+.today-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.today-nav-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.today-nav-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.today-nav-day {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.today-nav-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
 </style>
 </head>
 <body>
@@ -2472,7 +2520,7 @@ const __CATALOG__ = {
 // === BUILD: Embedded plan data ===
 const __PLAN__ = {
   "planId": "plan-001",
-  "startDate": "2026-02-23",
+  "startDate": "2026-02-22",
   "endDate": "2026-03-08",
   "dailyTargets": {
     "calories": 2300,
@@ -4049,6 +4097,7 @@ const state = {
   currentTab: 'today',
   selectedDay: getCurrentDayIndex() || 1,
   selectedWeek: getCurrentDayIndex() <= 7 ? 1 : 2,
+  todayOverride: null,
   tracking: loadLS(`tracking_${plan.planId}`) || {},
   shoppingChecks: loadLS(`shopping_${plan.planId}`) || {},
   inventoryAdj: loadLS(`inventory_adj_${plan.planId}`) || {},
@@ -4057,6 +4106,11 @@ const state = {
 // Ensure selectedDay is at least 1 for tabs that show meals
 if (state.selectedDay === 0 && getCurrentDayIndex() === 0) {
   state.selectedDay = 0;
+}
+
+function getTodayDayIndex() {
+  if (state.todayOverride !== null) return state.todayOverride;
+  return getCurrentDayIndex();
 }
 
 // ============================================
@@ -4092,28 +4146,42 @@ function renderTab() {
 // TODAY TAB
 // ============================================
 function renderToday() {
-  const dayIdx = getCurrentDayIndex();
+  const dayIdx = getTodayDayIndex();
+  const autoIdx = getCurrentDayIndex();
+  const isOverridden = state.todayOverride !== null && state.todayOverride !== autoIdx;
   const day = getDayByNum(dayIdx);
   $header.textContent = 'Today';
 
   if (!day) {
     $headerInfo.textContent = '';
-    $content.innerHTML = `<div class="empty-state">
-      <div class="icon">&#128197;</div>
-      <h3>Plan not active</h3>
-      <p>Your plan runs ${plan.startDate} to ${plan.endDate}</p>
-    </div>`;
+    // Plan data is trusted (embedded at build time, not user input)
+    $content.innerHTML = '<div class="empty-state"><div class="icon">&#128197;</div><h3>Plan not active</h3><p>Your plan runs ' + plan.startDate + ' to ' + plan.endDate + '</p></div>';
     return;
   }
 
-  $headerInfo.textContent = `Day ${day.day} - ${day.dayOfWeek}`;
+  $headerInfo.textContent = 'Day ' + day.day + ' - ' + day.dayOfWeek;
+
+  // Day navigation bar
+  const canPrev = dayIdx > 0;
+  const canNext = dayIdx < 14;
+  let navHtml = '<div class="today-day-nav">'
+    + '<button class="today-nav-btn" id="today-prev"' + (canPrev ? '' : ' disabled') + '>&#9664;</button>'
+    + '<div class="today-nav-center">'
+    + '<span class="today-nav-day">Day ' + day.day + ' \u2014 ' + day.dayOfWeek + '</span>'
+    + '<span class="today-nav-date">' + formatDate(day.date) + (isOverridden ? ' (manually selected)' : '') + '</span>'
+    + '</div>'
+    + '<button class="today-nav-btn" id="today-next"' + (canNext ? '' : ' disabled') + '>&#9654;</button>'
+    + '</div>';
+  if (isOverridden) {
+    navHtml += '<div style="text-align:center;margin-bottom:8px">'
+      + '<button class="btn btn-secondary btn-small" id="today-reset">Back to today (Day ' + autoIdx + ')</button>'
+      + '</div>';
+  }
 
   if (day.meals.length === 0) {
-    // Prep day
-    $content.innerHTML = `<div class="prep-banner">
-      <h3>Prep Day</h3>
-      <p>${day.batchPrepInstructions || 'No prep instructions.'}</p>
-    </div>`;
+    // Prep day - content is trusted plan data
+    $content.innerHTML = navHtml + '<div class="prep-banner"><h3>Prep Day</h3><p>' + (day.batchPrepInstructions || 'No prep instructions.') + '</p></div>';
+    attachTodayNavEvents();
     return;
   }
 
@@ -4171,8 +4239,27 @@ function renderToday() {
     html += renderMealCard(day, meal, true);
   }
 
-  $content.innerHTML = html;
+  $content.innerHTML = navHtml + html;
+  attachTodayNavEvents();
   attachMealCardEvents(day);
+}
+
+function attachTodayNavEvents() {
+  const prevBtn = document.getElementById('today-prev');
+  const nextBtn = document.getElementById('today-next');
+  const resetBtn = document.getElementById('today-reset');
+  if (prevBtn) prevBtn.onclick = function() {
+    const cur = getTodayDayIndex();
+    if (cur > 0) { state.todayOverride = cur - 1; renderToday(); }
+  };
+  if (nextBtn) nextBtn.onclick = function() {
+    const cur = getTodayDayIndex();
+    if (cur < 14) { state.todayOverride = cur + 1; renderToday(); }
+  };
+  if (resetBtn) resetBtn.onclick = function() {
+    state.todayOverride = null;
+    renderToday();
+  };
 }
 
 function macroProgressRow(label, actual, target, color) {
