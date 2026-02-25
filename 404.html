@@ -3806,6 +3806,16 @@ function isConfigured() {
   return SUPABASE_URL !== '__SUPABASE_URL__' && SUPABASE_ANON_KEY !== '__SUPABASE_ANON_KEY__';
 }
 
+// Race a promise against a timeout. Rejects with a descriptive error if ms elapses first.
+function withTimeout(promise, ms = 8000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Supabase timed out after ${ms}ms — project may be paused`)), ms)
+    )
+  ]);
+}
+
 /**
  * Get current authenticated user, or null.
  * @returns {object|null} The user object or null
@@ -3814,7 +3824,7 @@ async function getUser() {
   if (!isConfigured()) return null;
   try {
     const client = await initSupabase();
-    const { data: { user } } = await client.auth.getUser();
+    const { data: { user } } = await withTimeout(client.auth.getUser(), 5000);
     return user;
   } catch {
     return null;
@@ -3850,8 +3860,7 @@ async function signOut() {
  * @param {object} trackingData - { meals: { "1-breakfast": { completed, rating, ... } } }
  */
 async function syncTracking(planId, trackingData) {
-  const user = await getUser();
-  if (!user) return;
+  if (!currentUser) return;
   const client = await initSupabase();
 
   const meals = trackingData.meals ?? trackingData;
@@ -3861,8 +3870,8 @@ async function syncTracking(planId, trackingData) {
     const dayIndex = parseInt(parts[0]);
     const slot = parts.slice(1).join('-');
 
-    const { error } = await client.from('tracking').upsert({
-      user_id: user.id,
+    const { error } = await withTimeout(client.from('tracking').upsert({
+      user_id: currentUser.id,
       plan_id: planId,
       day_index: dayIndex,
       slot,
@@ -3873,7 +3882,7 @@ async function syncTracking(planId, trackingData) {
       substitution: data.substitution ?? null,
       notes: data.notes ?? null,
       updated_at: new Date().toISOString()
-    }, { onConflict: 'user_id,plan_id,day_index,slot' });
+    }, { onConflict: 'user_id,plan_id,day_index,slot' }));
     if (error) { console.warn(`Failed to sync tracking for ${key}:`, error); lastError = error; }
   }
   if (lastError) throw lastError;
@@ -3884,19 +3893,18 @@ async function syncTracking(planId, trackingData) {
  * @param {object} inventoryData - { productId: remaining_g }
  */
 async function syncInventory(inventoryData) {
-  const user = await getUser();
-  if (!user) return;
+  if (!currentUser) return;
   const client = await initSupabase();
 
   let lastError = null;
   for (const [productId, remaining] of Object.entries(inventoryData)) {
-    const { error } = await client.from('inventory').upsert({
-      user_id: user.id,
+    const { error } = await withTimeout(client.from('inventory').upsert({
+      user_id: currentUser.id,
       product_id: productId,
       remaining_g: remaining,
       source: 'derived',
       updated_at: new Date().toISOString()
-    }, { onConflict: 'user_id,product_id' });
+    }, { onConflict: 'user_id,product_id' }));
     if (error) { console.warn(`Failed to sync inventory for ${productId}:`, error); lastError = error; }
   }
   if (lastError) throw lastError;
@@ -3909,20 +3917,19 @@ async function syncInventory(inventoryData) {
  * @param {object} checksData - { productId: boolean }
  */
 async function syncShoppingChecks(planId, week, checksData) {
-  const user = await getUser();
-  if (!user) return;
+  if (!currentUser) return;
   const client = await initSupabase();
 
   let lastError = null;
   for (const [productId, checked] of Object.entries(checksData)) {
-    const { error } = await client.from('shopping_checks').upsert({
-      user_id: user.id,
+    const { error } = await withTimeout(client.from('shopping_checks').upsert({
+      user_id: currentUser.id,
       plan_id: planId,
       week,
       product_id: productId,
       checked,
       updated_at: new Date().toISOString()
-    }, { onConflict: 'user_id,plan_id,week,product_id' });
+    }, { onConflict: 'user_id,plan_id,week,product_id' }));
     if (error) { console.warn(`Failed to sync shopping check for ${productId}:`, error); lastError = error; }
   }
   if (lastError) throw lastError;
@@ -3934,15 +3941,14 @@ async function syncShoppingChecks(planId, week, checksData) {
  * @returns {object|null} Tracking data keyed by "dayIndex-slot", or null
  */
 async function loadTracking(planId) {
-  const user = await getUser();
-  if (!user) return null;
+  if (!currentUser) return null;
   const client = await initSupabase();
 
   try {
-    const { data, error } = await client.from('tracking')
+    const { data, error } = await withTimeout(client.from('tracking')
       .select('*')
-      .eq('user_id', user.id)
-      .eq('plan_id', planId);
+      .eq('user_id', currentUser.id)
+      .eq('plan_id', planId));
 
     if (error) throw error;
     if (!data || data.length === 0) return null;
@@ -3973,14 +3979,13 @@ async function loadTracking(planId) {
  * @returns {object|null} Inventory data keyed by productId, or null
  */
 async function loadInventory() {
-  const user = await getUser();
-  if (!user) return null;
+  if (!currentUser) return null;
   const client = await initSupabase();
 
   try {
-    const { data, error } = await client.from('inventory')
+    const { data, error } = await withTimeout(client.from('inventory')
       .select('*')
-      .eq('user_id', user.id);
+      .eq('user_id', currentUser.id));
 
     if (error) throw error;
     if (!data || data.length === 0) return null;
@@ -4004,16 +4009,15 @@ async function loadInventory() {
  * @returns {object|null} Shopping checks keyed by productId, or null
  */
 async function loadShoppingChecks(planId, week) {
-  const user = await getUser();
-  if (!user) return null;
+  if (!currentUser) return null;
   const client = await initSupabase();
 
   try {
-    const { data, error } = await client.from('shopping_checks')
+    const { data, error } = await withTimeout(client.from('shopping_checks')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', currentUser.id)
       .eq('plan_id', planId)
-      .eq('week', week);
+      .eq('week', week));
 
     if (error) throw error;
     if (!data || data.length === 0) return null;
@@ -4074,13 +4078,6 @@ function pct(actual, target) {
   return Math.min(Math.round((actual / target) * 100), 150);
 }
 
-function pctColor(actual, target) {
-  const p = pct(actual, target);
-  if (p >= 95 && p <= 110) return var_protein;
-  if (p >= 85 || p <= 120) return var_carbs;
-  return var_calories;
-}
-
 const var_protein = '#4CAF50';
 const var_carbs = '#FF9800';
 const var_fat = '#2196F3';
@@ -4106,11 +4103,6 @@ const state = {
   shoppingChecks: loadLS(`shopping_${plan.planId}`) || {},
   inventoryAdj: loadLS(`inventory_adj_${plan.planId}`) || {},
 };
-
-// Ensure selectedDay is at least 1 for tabs that show meals
-if (state.selectedDay === 0 && getCurrentDayIndex() === 0) {
-  state.selectedDay = 0;
-}
 
 function getTodayDayIndex() {
   if (state.todayOverride !== null) return state.todayOverride;
@@ -4158,7 +4150,6 @@ function renderToday() {
 
   if (!day) {
     $headerInfo.textContent = '';
-    // Plan data is trusted (embedded at build time, not user input)
     $content.innerHTML = '<div class="empty-state"><div class="icon">&#128197;</div><h3>Plan not active</h3><p>Your plan runs ' + plan.startDate + ' to ' + plan.endDate + '</p></div>';
     return;
   }
@@ -4183,13 +4174,11 @@ function renderToday() {
   }
 
   if (day.meals.length === 0) {
-    // Prep day - content is trusted plan data
     $content.innerHTML = navHtml + '<div class="prep-banner"><h3>Prep Day</h3><p>' + (day.batchPrepInstructions || 'No prep instructions.') + '</p></div>';
     attachTodayNavEvents();
     return;
   }
 
-  // Compute day totals and completed totals
   const dayTotals = computeDayTotals(day, catalog);
   const targets = plan.dailyTargets;
   let completedTotals = { calories: 0, protein_g: 0, carbs_g: 0, fat_g: 0 };
@@ -4456,10 +4445,10 @@ function renderPlan() {
   html += `<div class="card">
     <div class="stat-card-title">Day ${day.day} - ${day.dayOfWeek}, ${formatDate(day.date)}</div>
     <div class="day-bars">
-      ${dayBarRow('Cal', dayTotals.calories, targets.calories, var_calories)}
-      ${dayBarRow('Pro', dayTotals.protein_g, targets.protein_g, var_protein)}
-      ${dayBarRow('Carb', dayTotals.carbs_g, targets.carbs_g, var_carbs)}
-      ${dayBarRow('Fat', dayTotals.fat_g, targets.fat_g, var_fat)}
+      ${dayBarRow('Cal', dayTotals.calories, targets.calories)}
+      ${dayBarRow('Pro', dayTotals.protein_g, targets.protein_g)}
+      ${dayBarRow('Carb', dayTotals.carbs_g, targets.carbs_g)}
+      ${dayBarRow('Fat', dayTotals.fat_g, targets.fat_g)}
     </div>
   </div>`;
 
@@ -4473,7 +4462,7 @@ function renderPlan() {
   attachMealCardEvents(day);
 }
 
-function dayBarRow(label, actual, target, color) {
+function dayBarRow(label, actual, target) {
   const p = Math.min((actual / target) * 100, 150);
   const targetPos = Math.min((target / (target * 1.5)) * 100, 100);
   const barColor = macroColor(pct(actual, target));
@@ -4675,7 +4664,7 @@ function renderStock() {
         </div>
       </div>
       <div class="progress-bar">
-        <div class="fill" style="width:${Math.min(item.pctRemaining, 100)}%;background:${isLow ? var_calories : isOut ? var_calories : var_protein}"></div>
+        <div class="fill" style="width:${Math.min(item.pctRemaining, 100)}%;background:${(isLow || isOut) ? var_calories : var_protein}"></div>
       </div>
     </div>`;
   }
@@ -4836,10 +4825,10 @@ function renderStats() {
   html += `<div class="stat-card">
     <div class="stat-card-title">Average Daily Macros (Plan)</div>
     <div class="day-bars">
-      ${dayBarRow('Cal', allAvg.avgCalories, targets.calories, var_calories)}
-      ${dayBarRow('Pro', allAvg.avgProtein_g, targets.protein_g, var_protein)}
-      ${dayBarRow('Carb', allAvg.avgCarbs_g, targets.carbs_g, var_carbs)}
-      ${dayBarRow('Fat', allAvg.avgFat_g, targets.fat_g, var_fat)}
+      ${dayBarRow('Cal', allAvg.avgCalories, targets.calories)}
+      ${dayBarRow('Pro', allAvg.avgProtein_g, targets.protein_g)}
+      ${dayBarRow('Carb', allAvg.avgCarbs_g, targets.carbs_g)}
+      ${dayBarRow('Fat', allAvg.avgFat_g, targets.fat_g)}
     </div>
   </div>`;
 
@@ -4922,6 +4911,7 @@ function renderStats() {
 // ============================================
 let currentUser = null;
 let syncQueue = [];
+let syncInProgress = false;
 const SYNC_QUEUE_KEY = 'sync_queue';
 
 // Load any queued sync operations from localStorage
@@ -4940,7 +4930,8 @@ function queueSync(op) {
 }
 
 async function processSyncQueue() {
-  if (!currentUser || !navigator.onLine || syncQueue.length === 0) return;
+  if (!currentUser || !navigator.onLine || syncQueue.length === 0 || syncInProgress) return;
+  syncInProgress = true;
 
   showSyncIndicator('Syncing...');
   const queue = [...syncQueue];
@@ -4951,13 +4942,13 @@ async function processSyncQueue() {
     try {
       switch (op.type) {
         case 'tracking':
-          await syncTracking(op.planId, op.data);
+          await withTimeout(syncTracking(op.planId, op.data));
           break;
         case 'inventory':
-          await syncInventory(op.data);
+          await withTimeout(syncInventory(op.data));
           break;
         case 'shopping':
-          await syncShoppingChecks(op.planId, op.week, op.data);
+          await withTimeout(syncShoppingChecks(op.planId, op.week, op.data));
           break;
       }
     } catch (err) {
@@ -4967,6 +4958,7 @@ async function processSyncQueue() {
   }
 
   saveSyncQueue();
+  syncInProgress = false;
   if (syncQueue.length > 0) {
     showSyncIndicator('Sync failed');
     setTimeout(hideSyncIndicator, 4000);
@@ -5086,8 +5078,8 @@ $authSignOutBtn.addEventListener('click', async () => {
   $authSignOutBtn.disabled = true;
   $authSignOutBtn.textContent = 'Signing out...';
   try {
-    await signOut();
-  } catch { /* ignore API errors */ }
+    await withTimeout(signOut(), 5000);
+  } catch { /* ignore — force-clear below handles it regardless */ }
   // Force-clear local Supabase session regardless of API result
   for (const key of [...Object.keys(localStorage)]) {
     if (key.startsWith('sb-') || key === 'supabase.auth.token') localStorage.removeItem(key);
@@ -5116,8 +5108,8 @@ $authSyncNowBtn.addEventListener('click', async () => {
     }
     currentUser = user;
     await mergeRemoteData();
-    processSyncQueue();
-    $syncStatus.textContent = 'Sync triggered.';
+    await processSyncQueue();
+    $syncStatus.textContent = syncQueue.length > 0 ? 'Sync failed — check connection.' : 'Synced.';
     $syncStatus.className = 'auth-msg success';
     setTimeout(() => { $syncStatus.textContent = ''; $syncStatus.className = 'auth-msg'; }, 3000);
   } catch (err) {
@@ -5221,28 +5213,58 @@ async function initAuth() {
   try {
     const client = await initSupabase();
 
-    // Listen for auth state changes (handles magic link redirect)
+    // onAuthStateChange fires INITIAL_SESSION immediately for existing sessions,
+    // and SIGNED_IN / TOKEN_REFRESHED for new logins and token refreshes.
+    // We handle all cases here — no separate getUser() call needed.
     client.auth.onAuthStateChange(async (event, session) => {
       currentUser = session?.user || null;
       updateAuthUI();
-      if (currentUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+      if (event === 'INITIAL_SESSION' && currentUser) {
+        // Existing session on app load — pull remote data
+        await mergeRemoteData();
+        processSyncQueue();
+      } else if (currentUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        // New login (magic link) or token refresh
         await migrateLocalStorageToSupabase();
         await mergeRemoteData();
         processSyncQueue();
       }
     });
-
-    // Check current session
-    currentUser = await getUser();
-    updateAuthUI();
-    if (currentUser) {
-      await mergeRemoteData();
-      processSyncQueue();
-    }
   } catch (err) {
     console.warn('Auth init failed:', err);
   }
 }
+
+// ============================================
+// Diagnostics (call window.diagSupabase() from DevTools)
+// ============================================
+window.diagSupabase = async function() {
+  console.group('[Supabase Diag]');
+  console.log('Configured:', isSupabaseConfigured());
+  console.log('Online:', navigator.onLine);
+  console.log('Current user:', currentUser?.email ?? 'none');
+  console.log('Sync queue:', syncQueue.length, 'ops', syncQueue);
+  console.log('Sync in progress:', syncInProgress);
+  if (!isSupabaseConfigured()) { console.groupEnd(); return; }
+  try {
+    const client = await initSupabase();
+    console.log('Client: OK');
+    const t1 = Date.now();
+    const { data: { user }, error: authErr } = await withTimeout(client.auth.getUser(), 5000);
+    console.log(`getUser() ${Date.now() - t1}ms — user: ${user?.email ?? 'none'}`, authErr ? `err: ${authErr.message}` : '');
+    if (user) {
+      const t2 = Date.now();
+      const { error: dbErr } = await withTimeout(
+        client.from('tracking').select('count').eq('user_id', user.id).limit(1),
+        5000
+      );
+      console.log(`DB ping ${Date.now() - t2}ms —`, dbErr ? `FAILED: ${dbErr.message}` : 'OK');
+    }
+  } catch (err) {
+    console.error('Diag failed:', err.message);
+  }
+  console.groupEnd();
+};
 
 // ============================================
 // Init
