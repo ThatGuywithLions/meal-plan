@@ -1081,7 +1081,11 @@ button {
       </div>
       <div id="auth-signed-in" style="display:none">
         <div class="auth-status">Signed in as <span class="email" id="auth-user-email"></span></div>
-        <button class="btn btn-secondary btn-small" id="auth-signout-btn">Sign out</button>
+        <div id="auth-sync-status" class="auth-msg"></div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button class="btn btn-secondary btn-small" id="auth-sync-now-btn">Sync now</button>
+          <button class="btn btn-secondary btn-small" id="auth-signout-btn">Sign out</button>
+        </div>
       </div>
     </div>
   </div>
@@ -3851,29 +3855,28 @@ async function syncTracking(planId, trackingData) {
   const client = await initSupabase();
 
   const meals = trackingData.meals ?? trackingData;
+  let lastError = null;
   for (const [key, data] of Object.entries(meals)) {
     const parts = key.split('-');
     const dayIndex = parseInt(parts[0]);
     const slot = parts.slice(1).join('-');
 
-    try {
-      await client.from('tracking').upsert({
-        user_id: user.id,
-        plan_id: planId,
-        day_index: dayIndex,
-        slot,
-        completed: data.completed ?? false,
-        rating: data.rating ?? null,
-        skipped: data.skipped ?? false,
-        skip_reason: data.skipReason ?? null,
-        substitution: data.substitution ?? null,
-        notes: data.notes ?? null,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,plan_id,day_index,slot' });
-    } catch (err) {
-      console.warn(`Failed to sync tracking for ${key}:`, err);
-    }
+    const { error } = await client.from('tracking').upsert({
+      user_id: user.id,
+      plan_id: planId,
+      day_index: dayIndex,
+      slot,
+      completed: data.completed ?? false,
+      rating: data.rating ?? null,
+      skipped: data.skipped ?? false,
+      skip_reason: data.skipReason ?? null,
+      substitution: data.substitution ?? null,
+      notes: data.notes ?? null,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,plan_id,day_index,slot' });
+    if (error) { console.warn(`Failed to sync tracking for ${key}:`, error); lastError = error; }
   }
+  if (lastError) throw lastError;
 }
 
 /**
@@ -3885,19 +3888,18 @@ async function syncInventory(inventoryData) {
   if (!user) return;
   const client = await initSupabase();
 
+  let lastError = null;
   for (const [productId, remaining] of Object.entries(inventoryData)) {
-    try {
-      await client.from('inventory').upsert({
-        user_id: user.id,
-        product_id: productId,
-        remaining_g: remaining,
-        source: 'derived',
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,product_id' });
-    } catch (err) {
-      console.warn(`Failed to sync inventory for ${productId}:`, err);
-    }
+    const { error } = await client.from('inventory').upsert({
+      user_id: user.id,
+      product_id: productId,
+      remaining_g: remaining,
+      source: 'derived',
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,product_id' });
+    if (error) { console.warn(`Failed to sync inventory for ${productId}:`, error); lastError = error; }
   }
+  if (lastError) throw lastError;
 }
 
 /**
@@ -3911,20 +3913,19 @@ async function syncShoppingChecks(planId, week, checksData) {
   if (!user) return;
   const client = await initSupabase();
 
+  let lastError = null;
   for (const [productId, checked] of Object.entries(checksData)) {
-    try {
-      await client.from('shopping_checks').upsert({
-        user_id: user.id,
-        plan_id: planId,
-        week,
-        product_id: productId,
-        checked,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,plan_id,week,product_id' });
-    } catch (err) {
-      console.warn(`Failed to sync shopping check for ${productId}:`, err);
-    }
+    const { error } = await client.from('shopping_checks').upsert({
+      user_id: user.id,
+      plan_id: planId,
+      week,
+      product_id: productId,
+      checked,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,plan_id,week,product_id' });
+    if (error) { console.warn(`Failed to sync shopping check for ${productId}:`, error); lastError = error; }
   }
+  if (lastError) throw lastError;
 }
 
 /**
@@ -4966,7 +4967,12 @@ async function processSyncQueue() {
   }
 
   saveSyncQueue();
-  hideSyncIndicator();
+  if (syncQueue.length > 0) {
+    showSyncIndicator('Sync failed');
+    setTimeout(hideSyncIndicator, 4000);
+  } else {
+    hideSyncIndicator();
+  }
 }
 
 function showSyncIndicator(text) {
@@ -5077,11 +5083,50 @@ $authSignInBtn.addEventListener('click', async () => {
 });
 
 $authSignOutBtn.addEventListener('click', async () => {
+  $authSignOutBtn.disabled = true;
+  $authSignOutBtn.textContent = 'Signing out...';
   try {
     await signOut();
-  } catch { /* ignore */ }
+  } catch { /* ignore API errors */ }
+  // Force-clear local Supabase session regardless of API result
+  for (const key of [...Object.keys(localStorage)]) {
+    if (key.startsWith('sb-') || key === 'supabase.auth.token') localStorage.removeItem(key);
+  }
+  supabaseClient = null; // Force re-init on next use
   currentUser = null;
+  $authSignOutBtn.disabled = false;
+  $authSignOutBtn.textContent = 'Sign out';
   updateAuthUI();
+});
+
+const $authSyncNowBtn = document.getElementById('auth-sync-now-btn');
+$authSyncNowBtn.addEventListener('click', async () => {
+  const $syncStatus = document.getElementById('auth-sync-status');
+  $authSyncNowBtn.disabled = true;
+  $authSyncNowBtn.textContent = 'Syncing...';
+  $syncStatus.textContent = '';
+  try {
+    const user = await getUser();
+    if (!user) {
+      $syncStatus.textContent = 'Session expired — please sign out and sign in again.';
+      $syncStatus.className = 'auth-msg error';
+      currentUser = null;
+      updateAuthUI();
+      return;
+    }
+    currentUser = user;
+    await mergeRemoteData();
+    processSyncQueue();
+    $syncStatus.textContent = 'Sync triggered.';
+    $syncStatus.className = 'auth-msg success';
+    setTimeout(() => { $syncStatus.textContent = ''; $syncStatus.className = 'auth-msg'; }, 3000);
+  } catch (err) {
+    $syncStatus.textContent = 'Sync error: ' + (err.message || 'Check connection or Supabase project status.');
+    $syncStatus.className = 'auth-msg error';
+  } finally {
+    $authSyncNowBtn.disabled = false;
+    $authSyncNowBtn.textContent = 'Sync now';
+  }
 });
 
 // Migrate localStorage to Supabase on first authenticated load
